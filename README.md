@@ -1,7 +1,7 @@
 Query
 ===================
 
-A lightweight query API to query Javascript arrays using MongoDB syntax in the browser and/or Node.js.
+A lightweight API to query Javascript arrays using MongoDB syntax in the browser and Node.js.
 
 
 Installation
