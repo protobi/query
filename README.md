@@ -7,7 +7,8 @@ Please report any bugs, feature requests in the issue tracker.  Pull requests ar
 
 History
 ====================
-This project was developed independently of underscore-query as a proprietary module, yet is remarkably similar in design and result.
+This project was developed independently of underscore-query as a proprietary module, yet is remarkably similar in design
+and operation to [underscore-query] by @davidtonge.
 The API matches much of the README doc and the code passes most of unit tests in the underscore-query module.
 Ideally,
 So have made a few changes to make them as compatible as possible and borrowed the README and test suite with minimal changes.
@@ -30,6 +31,10 @@ It does not (yet?) do some cool extensions underscore-query offers:
    - Pass the current object model as `this` to `$cb` functions (here, use the $where clause for that)
    - Support `$computed` (here use the `$where` clause for this)
 
+Also, this library is not tied to underscore or lodash.  However it will use them for `$deepEquals` if they are present,
+otherwise it reverts to a simple string comparison of `JSON.stringify()` results.
+
+
 Installation
 ============
 
@@ -50,9 +55,11 @@ It can be convenient in your own code to extend Array or Underscore/Lodash:
 
 ```js
 Array.prototype.query = function(q) { return Query.query(this, q); });
+```
+or
+```js
 _.mixin(Query);
 ```
-
 
 Basic Usage
 ===========
