@@ -1,7 +1,7 @@
 Query
 ===================
 
-A lightweight query API plugin for Underscore.js - works in the Browser and Node.js server.
+A lightweight query API to query Javascript arrays using MongoDB syntax in the browser and/or Node.js.
 
 
 Installation
