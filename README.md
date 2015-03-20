@@ -439,13 +439,13 @@ a = new Backbone.Collection([
 History
 ====================
 This module originated as a proprietary module for Protobi core, implementing MongoDB syntax for Javascript data arrays.
-As might be expeccted the API turned out to be remarkably similar to another library implementing MongoDB-like syntax,
+As might be expected the API turned out to be  similar to another library implementing MongoDB-like syntax,
  [underscore-query](https://github.com/davidgtonge/underscore-query) by [@davidgtonge](https://github.com/davidgtonge),
  which was developed independently.  This API matches much of underscore-query's documentation,
  and the code passes most of unit tests in the underscore-query module.
 
 Ultimately, I aim to bring this library into sync with underscore-query and merge this one away.
-For now have made a few changes to make them as compatible as possible and leverage the thorough test suite and README developed for underscore-query.
+For now have made a few changes to make them as compatible as possible and leveraged the thorough test suite and README developed for underscore-query.
 
 This library has few changes to more closely match MongoDB query syntax:
    - `$and` and `$or` constraints specified as linear arrays of constraint objects, rather than associative arrays, as in MongoDB
