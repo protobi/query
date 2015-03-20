@@ -1,34 +1,7 @@
-underscore-query
+Query
 ===================
 
 A lightweight query API plugin for Underscore.js - works in the Browser and Node.js server.
-
-Please report any bugs, feature requests in the issue tracker.  Pull requests are welcome!
-
-History
-====================
-This project was developed independently of [underscore-query](https://github.com/davidgtonge/underscore-query) by [@davidgtonge](https://github.com/davidgtonge) as a proprietary module, yet is remarkably similar in design.
-The API matches much of the README doc and the code passes most of unit tests in the underscore-query module.
-The ultimate aim is to bring this library into sync with underscore-query and drop support for this one.  For now have made a few changes to make them as compatible as possible and leverage the thorough test suite and README developed for underscore-query.
-
-However, this library does some things differently than underscore-query.  It includes a few changes to more closely match MongoDB to build queries that work both in Javascript as well as in MongoDB:
-   - `$and` and `$or` constraints specified as linear arrays of constraint objects, rather than associative arrays, as in MongoDB
-   - Recursive application of `$and` and `$or`, such that these can be used on the left side as in MongoDB
-   - Supports `$where` clauses as in MongoDB
-
-This also makes two non-standard extensions.
-   - uses `==` rather than `===` as the  $eq comparator for data that may have been loaded from CSV and
-    thus may not have converted numeric strings to numbers (e.g. `"3"` vs `3`)
-   - Makes dot parsing attributes optional, to support data where key values may include embedded dots.
-
-It does not (yet?) do some cool extensions underscore-query offers:
-   - Chaining to build query objects
-   - Scoring
-   - Pass the current object model as `this` to `$cb` functions (here, use the $where clause for that)
-   - Support `$computed` (here use the `$where` clause for this)
-
-Also, this library is not tied to underscore or lodash.  However it will use them for `$deepEquals` if they are present,
-otherwise it reverts to a simple string comparison of `JSON.stringify()` results.
 
 
 Installation
@@ -462,3 +435,34 @@ a = new Backbone.Collection([
         title: "about"
       }, "get");
 ```
+History
+====================
+This module originated as a proprietary module for Protobi core, implementing MongoDB syntax for Javascript data arrays.
+As might be expeccted the API turned out to be remarkably similar to another library implementing MongoDB-like syntax,
+ [underscore-query](https://github.com/davidgtonge/underscore-query) by [@davidgtonge](https://github.com/davidgtonge),
+ which was developed independently.  This API matches much of underscore-query's documentation,
+ and the code passes most of unit tests in the underscore-query module.
+
+Ultimately, I aim to bring this library into sync with underscore-query and merge this one away.
+For now have made a few changes to make them as compatible as possible and leverage the thorough test suite and README developed for underscore-query.
+
+This library has few changes to more closely match MongoDB query syntax:
+   - `$and` and `$or` constraints specified as linear arrays of constraint objects, rather than associative arrays, as in MongoDB
+   - Recursive application of `$and` and `$or`, such that these can be used on the left hand side as in MongoDB
+   - Supports `$where` clauses as in MongoDB
+
+This also makes two non-standard extensions to MongoDB query syntax:
+   - uses `==` rather than `===` as the  `$eq` comparator, to accomodate data that may have been loaded from CSV and
+    thus may store numbers as strings (e.g. `"3"` vs `3`)
+   - Makes dot parsing attributes optional, to support data where variable names may include embedded dots (e.g. `802.11g`)
+
+It does not do some useful extensions that underscore-query offers:
+   - Chaining to build query objects
+   - Scoring
+   - Pass the current object model as `this` to `$cb` functions (here, use the $where clause for that)
+   - Support `$computed` (here use the `$where` clause for this)
+
+There are also a few implementation differences:
+* This library is not tied to underscore or lodash, although it will use them for `$deepEquals` if they are present,
+otherwise it reverts to a simple string comparison of `JSON.stringify()` results.
+* The library can be included via AMD (Require.js), CommonJS (Node.js) or directly `<script>` tag.
