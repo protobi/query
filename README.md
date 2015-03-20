@@ -7,15 +7,11 @@ Please report any bugs, feature requests in the issue tracker.  Pull requests ar
 
 History
 ====================
-This project was developed independently of underscore-query as a proprietary module, yet is remarkably similar in design
-and operation to [underscore-query] by @davidtonge.
+This project was developed independently of [underscore-query](https://github.com/davidgtonge/underscore-query) by [@davidgtonge](https://github.com/davidgtonge) as a proprietary module, yet is remarkably similar in design.
 The API matches much of the README doc and the code passes most of unit tests in the underscore-query module.
-Ideally,
-So have made a few changes to make them as compatible as possible and borrowed the README and test suite with minimal changes.
+The ultimate aim is to bring this library into sync with underscore-query and drop support for this one.  For now have made a few changes to make them as compatible as possible and leverage the thorough test suite and README developed for underscore-query.
 
-
-However, this library does some things differently than underscore-query.  It includes these changes to more closely match MongoDB
-to build queries that work both in Javascript as well as in MongoDB:
+However, this library does some things differently than underscore-query.  It includes a few changes to more closely match MongoDB to build queries that work both in Javascript as well as in MongoDB:
    - `$and` and `$or` constraints specified as linear arrays of constraint objects, rather than associative arrays, as in MongoDB
    - Recursive application of `$and` and `$or`, such that these can be used on the left side as in MongoDB
    - Supports `$where` clauses as in MongoDB
