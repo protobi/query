@@ -1,0 +1,38 @@
+{
+  "name": "query",
+  "version": "0.1.0",
+  "description": "MongoDB Javascript arrays logic",
+  "main": "query.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "backbone": "^1.1.2",
+    "lodash": "^3.5.0"
+  },
+  "devDependencies": {
+    "coffee-script": "^1.9.1"
+  },
+  "scripts": {
+    "test": "mocha",
+    "build": "browserify src/query.js --standalone Query > query.js",
+    "minify":"cat query.js | uglifyjs > query.min.js",
+    "all": "npm run test && npm run build && npm run minify"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/protobi/query.git"
+  },
+  "keywords": [
+    "MongoDB",
+    "query",
+    "javascript",
+    "array"
+  ],
+  "author": "Pieter Sheth-Voss, PhD",
+  "license": "MITNFA",
+  "bugs": {
+    "url": "https://github.com/protobi/query/issues"
+  },
+  "homepage": "https://github.com/protobi/query"
+}
