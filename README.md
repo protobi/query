@@ -20,6 +20,7 @@ define(['query', function(Query) { ... my script ... });
 You can install with NPM: `npm install protobi/query`
 `query = require("query");`
 
+#### Extend _ or Array prototype
 It can be convenient in your own code to extend Array or Underscore/Lodash:
 
 ```js
