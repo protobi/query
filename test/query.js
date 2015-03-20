@@ -648,7 +648,6 @@
           ]
         }
       ];
-      console.log("=========================================");
       text_search = {
         $likeI: "love"
       };
@@ -1286,7 +1285,6 @@
         }
       });
       assert.equal(result.length, 2);
-      return console.log(result);
     });
   });
 
@@ -1393,7 +1391,6 @@
         }
       ]
     });
-    console.log(result);
     assert.equal(result.length, 2);
     assert.equal(result[0].title, "About");
     return assert.equal(result[1].title, "Contact");

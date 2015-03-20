@@ -15,7 +15,6 @@
   },
   "scripts": {
     "test": "mocha",
-    "build": "browserify src/query.js --standalone Query > query.js",
     "minify":"cat query.js | uglifyjs > query.min.js",
     "all": "npm run test && npm run build && npm run minify"
   },

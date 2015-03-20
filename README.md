@@ -16,7 +16,7 @@ However, this library does some things differently than underscore-query.  It in
    - Recursive application of `$and` and `$or`, such that these can be used on the left side as in MongoDB
    - Supports `$where` clauses as in MongoDB
 
-This also makes two non-standard extensions.  The first is use a
+This also makes two non-standard extensions.
    - uses `==` rather than `===` as the  $eq comparator for data that may have been loaded from CSV and
     thus may not have converted numeric strings to numbers (e.g. `"3"` vs `3`)
    - Makes dot parsing attributes optional, to support data where key values may include embedded dots.
