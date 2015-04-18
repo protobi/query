@@ -180,6 +180,15 @@
       });
       return assert.equal(result.length, 2);
     });
+    it("$in operator array shortcut", function() {
+      var a, result;
+      a = create();
+      result = _.query(a, {
+        title: ["Home", "About"]
+        
+      });
+      return assert.equal(result.length, 2);
+    });
     it("$in operator with wrong query value", function() {
       var a;
       a = create();
@@ -1424,7 +1433,7 @@
     return assert.equal(result.length, 2);
   });
 
-  it("Handes $where function", function() {
+  it("Handles $where function", function() {
     var a, result;
     a = create();
     result = _.query(a, {
@@ -1435,7 +1444,7 @@
     return assert.equal(result.length, 1);
   });
 
-  it("Handes $where string", function() {
+  it("Handles $where string", function() {
     var a, result;
     a = create();
     result = _.query(a, {
@@ -1447,3 +1456,21 @@
 }).call(this);
 
 //# sourceMappingURL=logic.js.map
+
+var table1 = [
+  { id: 4, color: "red"},
+  { id: 1, color: "red"},
+  { id: 2, color: "green"},
+  { id: 5, color: "purple"},
+  { id: 3, color: "blue"},
+  { id: 6, color: "yellow"}
+]
+
+var table2 = [
+  { id: 1, metal: "steel"},
+  { id: 2, metal: "aluminum"},
+  { id: 3, metal: "copper"},
+  { id: 4, metal: "silver"},
+  { id: 5, metal: "bronze"},
+  { id: 7, metal: "titanium"}
+]

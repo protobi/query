@@ -47,6 +47,19 @@
       }
     },
 
+    join: function(left_rows, right_rows, left_key, right_key) {
+      var leftKeyFn, rightKeyFn;
+      if (typeof left_key == 'string') leftKeyFn = function(row) { return row[left_key]; }
+      else leftKeyFn = left_key;
+
+      if (!right_key) rightKeyFn = leftKeyFn;
+      if (typeof right_key == 'string') rightKeyFn = function(row) { return row[left_key]; }
+      else rightKeyFn = right_key;
+
+      return left_rows;
+
+
+    },
     query: function (rows, constraints, getter) {
 
       if (typeof getter == 'string') {
@@ -127,6 +140,9 @@
           }
           else if (constraint instanceof RegExp) {
             return this.$regex(value, constraint);
+          }
+          else if (Array.isArray(constraint)) {
+            return this.$in(value, constraint);
           }
           else if (typeof constraint === 'object') {
 
