@@ -146,6 +146,10 @@
           }
           else if (typeof constraint === 'object') {
 
+            if (constraint.$regex) {
+              return this.$regex(value, new RegExp(constraint.$regex, constraint.$options))
+            }
+
             for (var key in constraint) {
               if (!this[key]) {
                 return this.$eq(value, constraint, parentKey)

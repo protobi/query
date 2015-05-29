@@ -185,7 +185,7 @@
       a = create();
       result = _.query(a, {
         title: ["Home", "About"]
-        
+
       });
       return assert.equal(result.length, 2);
     });
@@ -344,6 +344,17 @@
       });
       assert.equal(result.length, 1);
       return assert.equal(result[0].title, "Home");
+    });
+    it("$regex", function() {
+      var a, result;
+      a = create();
+      result = _.query(a, {
+        content: {
+          $regex: 'javascript',$options: 'gi'
+        }
+      });
+      assert.equal(result.length, 1);
+      return assert.equal(result[0].title, "About");
     });
     it("$regex", function() {
       var a, result;

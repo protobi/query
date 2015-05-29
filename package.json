@@ -16,7 +16,7 @@
   "scripts": {
     "test": "mocha",
     "minify":"cat query.js | uglifyjs > query.min.js",
-    "all": "npm run test && npm run build && npm run minify"
+    "all": "npm run test && npm run minify"
   },
   "repository": {
     "type": "git",
