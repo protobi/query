@@ -348,7 +348,6 @@
         },
 
         $lt: function (values, ref) {
-          console.log(["$lt", values, ref, values<ref])
           return values < ref;
         },
 
