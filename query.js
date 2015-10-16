@@ -38,8 +38,15 @@
     });
   }
 
+  // should turn this function around so it works more like this
+  //
+  // var truth = Query(q).satisfies(obj)
 
   var Query = {
+
+    satisfies: function(row, constraints, getter) {
+      return Query.lhs._rowsatisfies(row, constraints, getter);
+    },
 
     Query: function (constraints, getter) {
       return function (row) {
@@ -341,6 +348,7 @@
         },
 
         $lt: function (values, ref) {
+          console.log(["$lt", values, ref, values<ref])
           return values < ref;
         },
 
@@ -386,22 +394,20 @@
   Query.lhs.rhs.$any = Query.lhs.rhs.$or;
   Query.lhs.rhs.$all = Query.lhs.rhs.$and;
 
-//This allows a query object with regex values to be serialized to JSON
-//http://stackoverflow.com/questions/12075927/serialization-of-regexp
-//However, it doesn't solve the problem of parsing them back to regex on input
+  Query.satisfies =  function(row, constraints, getter) {
+    return this.lhs._rowsatisfies(row, constraints, getter);
+  }
+  Array.prototype.query = function(q) { return Query.query(this, q); }
+
+  //This allows a query object with regex values to be serialized to JSON
+  //http://stackoverflow.com/questions/12075927/serialization-of-regexp
+  //However, it doesn't solve the problem of parsing them back to regex on input
   RegExp.prototype.toJSON = RegExp.prototype.toString;
 
-  if (typeof module != 'undefined') {
-    module.exports = Query;
-  }
-  else if (typeof define != 'undefined' && define.amd) {
-    define('query',[], function() { return Query; })
-  }
-  else if (typeof window != 'undefined') {
-    window.Query = Query;
-  }
-  else if (typeof GLOBAL != undefined && GLOBAL.global) {
-    GLOBAL.global.Query = Query;
-  }
+  if (typeof module != 'undefined') module.exports = Query;
+  else if (typeof define != 'undefined' && define.amd)   define('query',[], function() { return Query; })
+  else if (typeof window != 'undefined') window.Query = Query;
+  else if (typeof GLOBAL != undefined && GLOBAL.global) GLOBAL.global.Query = Query;
+
   return Query;
 })(this);

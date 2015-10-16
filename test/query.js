@@ -109,12 +109,12 @@
     it("$lt operator", function() {
       var a, result;
       a = create();
-      result = _.query(a, {
-        likes: {
-          $lt: 12
-        }
-      });
+      result = _.query(a, {  likes: {   $lt: 12  } });
       assert.equal(result.length, 1);
+
+      result = _.query(a, {  likes: {   $lt: '12'  } });
+      assert.equal(result.length, 1);
+
       return assert.equal(result[0].title, "About");
     });
     it("$lte operator", function() {
@@ -461,6 +461,25 @@
       assert.equal(result.length, 1);
       return assert.equal(result[0].title, "Home");
     });
+
+    it ("Nested left $and", function() {
+      var q = {"$and":[{"bo_admitflag":"1"},{"$and":[{"bo_emfasys":"1"},{"bo_transferstudent":"0"}]}]};
+      var o = { bo_admitflag: 1, bo_emfasys: 1, bo_transferstudent: 0}
+      assert(Logic.lhs._rowsatisfies(o,q))
+
+    });
+
+    //
+    it ("Linear left $and", function() {
+      var q = {"$and":[{"b":{"$gt":"12"}},{"a":{"$lt":"20"}}]}
+
+      assert(Logic.lhs._rowsatisfies( { a: 3, b: 13} ,q))
+      assert(Logic.lhs._rowsatisfies( { a: 3 , b: '13'} ,q))
+
+//      assert(Logic.lhs._rowsatisfies( {"i":"2","j":"w","a":"3","b":"13","c":""} ,q))
+
+    });
+
     it("$or operator", function() {
       var a, result;
       a = create();
