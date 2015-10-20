@@ -151,7 +151,7 @@
           else if (Array.isArray(constraint)) {
             return this.$in(value, constraint);
           }
-          else if (typeof constraint === 'object') {
+          else if (constraint && typeof constraint === 'object') {
 
             if (constraint.$regex) {
               return this.$regex(value, new RegExp(constraint.$regex, constraint.$options))
@@ -189,8 +189,13 @@
             }
             return false;
           }
+          else {
+            if (constraint === null || constraint === undefined || constraint === '') return (value === null || value === undefined || value === '');
 
-          return value == constraint;
+            else return value == constraint;
+
+            return value == constraint;
+          }
         },
 
         $deepEquals: function (value, constraint) {

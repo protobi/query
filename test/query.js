@@ -1483,6 +1483,7 @@
     return assert.equal(result.length, 2);
   });
 
+
 }).call(this);
 
 //# sourceMappingURL=logic.js.map
