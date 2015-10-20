@@ -142,60 +142,44 @@
         // test whether a single value matches a particular constraint
         _satisfies: function (value, constraint, parentKey) {
 
-          if (constraint == value) {
-            return true;
-          }
-          else if (constraint instanceof RegExp) {
-            return this.$regex(value, constraint);
-          }
-          else if (Array.isArray(constraint)) {
-            return this.$in(value, constraint);
-          }
+          if (constraint === value)  return true;
+          else if (constraint instanceof RegExp)  return this.$regex(value, constraint);
+          else if (Array.isArray(constraint))  return this.$in(value, constraint);
           else if (constraint && typeof constraint === 'object') {
-
-            if (constraint.$regex) {
-              return this.$regex(value, new RegExp(constraint.$regex, constraint.$options))
-            }
-
+            if (constraint.$regex) return this.$regex(value, new RegExp(constraint.$regex, constraint.$options))
             for (var key in constraint) {
-              if (!this[key]) {
-                return this.$eq(value, constraint, parentKey)
-                throw new Error("Constraint function not recognized: " + key);
-              }
-              if (!this[key](value, constraint[key], parentKey)) {
-                return false;
-              }
+              if (!this[key])  return this.$eq(value, constraint, parentKey)
+              else if (!this[key](value, constraint[key], parentKey))  return false;
             }
             return true;
           }
-          else if (constraint === '' || constraint == null || constraint === undefined) {
-            return this.$null(value);
+          else if (Array.isArray(value)) {
+            for (var i = 0; i < value.length; i++)
+              if (this.$eq(value[i], constraint)) return true;
+            return false;
           }
-          else {
-            return this.$eq(value, constraint);
-          }
+          else if (constraint === '' || constraint === null || constraint === undefined)  return this.$null(value);
+          else return this.$eq(value, constraint);
+
         },
+
+
+        $eq: function (value, constraint) {
+
+          if (value === constraint) return true;
+          else if (Array.isArray(value)) {
+            for (var i = 0; i < value.length; i++)
+              if (this.$eq(value[i], constraint)) return true;
+            return false;
+          }
+          else if (constraint === null || constraint === undefined || constraint === '')  return this.$null(value);
+          else return value == constraint;
+
+        },
+
 
         $exists: function (value, constraint, parentKey) {
           return (value != undefined) == (constraint && true);
-        },
-
-        $eq: function (value, constraint) {
-          if (Array.isArray(value)) {
-            for (var i = 0; i < value.length; i++) {
-              if (this.$eq(value[i], constraint)) {
-                return true;
-              }
-            }
-            return false;
-          }
-          else {
-            if (constraint === null || constraint === undefined || constraint === '') return (value === null || value === undefined || value === '');
-
-            else return value == constraint;
-
-            return value == constraint;
-          }
         },
 
         $deepEquals: function (value, constraint) {

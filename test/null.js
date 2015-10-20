@@ -18,13 +18,16 @@
         { a: NaN, b:4 }
       ]
       var result = _.query(rows, { a: null});
-      assert(result.length = 3)
+            console.log(result)
 
-      var result = _.query(rows, { a: ''});
-      assert(result.length = 3)
-
-      var result = _.query(rows, { a: undefined});
-      assert(result.length = 3)
+      assert.equal(result.length,   3)
+//
+//      var result = _.query(rows, { a: ''});
+//      console.log(result)
+//      assert.equal(result.length, 3)
+//
+//      var result = _.query(rows, { a: undefined});
+//      assert.equal(result.length, 3)
 
     });
   });
