@@ -319,13 +319,13 @@
           var result = false;
           if (Array.isArray(values)) {
             for (var i = 0; i < values.length; i++) {
-              if (constraint.test(values)) {
-                result = true;
-                break;
+              if (constraint.test(values[i])) {
+                return true;
               }
             }
           }
           else return constraint.test(values);
+          
         },
 
         $gte: function (values, ref) {

@@ -395,6 +395,17 @@
       });
       return assert.equal(result.length, 1);
     });
+    it("$regex with multiple response values", function () {
+      var a, result;
+      a = create();
+      result = _.query(a, {
+        colors: /red/i
+      });
+      return assert.equal(result.length, 3);
+    });
+
+
+
     it("$cb - callback", function() {
       var a, fn, result;
       a = create();
