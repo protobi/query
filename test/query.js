@@ -37,9 +37,7 @@
   };
 
   describe("Underscore Query Tests", function() {
-    it("Says hello", function() {
-      return assert(true);
-    });
+   
     it("Equals query", function() {
       var a, result;
       a = create();

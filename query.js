@@ -91,7 +91,8 @@
           }
           else {
             var val = (getter ? getter(row, key) : row[key]);
-            if (!this.rhs._satisfies(val, constraints[key], key)) return false;
+            var res = this.rhs._satisfies(val, constraints[key], key)
+            if (!res) return false;
           }
         }
         return true;
@@ -165,15 +166,16 @@
 
 
         $eq: function (value, constraint) {
-
+          
           if (value === constraint) return true;
           else if (Array.isArray(value)) {
             for (var i = 0; i < value.length; i++)
               if (this.$eq(value[i], constraint)) return true;
             return false;
           }
-          else if (constraint === null || constraint === undefined || constraint === '')  return this.$null(value);
-          else return value == constraint;
+          else if (constraint === null || constraint === undefined || constraint === '')  { return this.$null(value);}
+          else if (value ===null ||  value === '' || value === undefined) return false; //we know from above the constraint is not null
+          else { return value == constraint};
 
         },
 
@@ -241,12 +243,13 @@
          * @returns {boolean}
          */
         $null: function (values) {
+          var result ;
           if (values === '' || values === null || values === undefined) {
             return true;
           }
           else if (Array.isArray(values)) {
             for (var v = 0; v < values.length; v++) {
-              if (!(values[v] === '' || values[v] === null || values === undefined)) {
+              if (!this.$null(values[v])) {
                 return false;
               }
             }

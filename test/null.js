@@ -17,11 +17,19 @@
         { a: '', b:4 },
         { a: NaN, b:4 }
       ]
-      var result = _.query(rows, { a: null});
-            console.log(result)
+      // var result = _.query(rows, { a: null});
+      // console.log(result)
+      // assert.equal(result.length,   3)
 
-      assert.equal(result.length,   3)
-//
+
+      var result = _.query(rows, { a: 0});
+      console.log(result)
+      
+      assert.equal(result.length,   1)
+
+
+
+
 //      var result = _.query(rows, { a: ''});
 //      console.log(result)
 //      assert.equal(result.length, 3)
