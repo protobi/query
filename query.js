@@ -332,19 +332,19 @@
         },
 
         $gte: function (values, ref) {
-          return values >= ref;
+          return values >= ref && !this.$null(values);
         },
 
         $gt: function (values, ref) {
-          return values > ref;
+          return values > ref && !this.$null(values);
         },
 
         $lt: function (values, ref) {
-          return values < ref;
+          return values < ref && !this.$null(values);
         },
 
         $lte: function (values, ref) {
-          return values <= ref;
+          return values <= ref && !this.$null(values);
         },
 
         $type: function (values, ref) {
