@@ -332,19 +332,32 @@
         },
 
         $gte: function (values, ref) {
-          return values >= ref && !this.$null(values);
+          return !this.$null(values) && values >= this.resolve(ref)
         },
 
         $gt: function (values, ref) {
-          return values > ref && !this.$null(values);
+          return !this.$null(values) && values > this.resolve(ref);
         },
 
         $lt: function (values, ref) {
-          return values < ref && !this.$null(values);
+          return !this.$null(values) &&  values < this.resolve(ref) ;
         },
 
         $lte: function (values, ref) {
-          return values <= ref && !this.$null(values);
+          return !this.$null(values) && values <= this.resolve(ref);
+        },
+
+        $before: function(values, ref) {
+          if (typeof ref === 'string') ref = Date.parse(ref);
+          if (typeof values === 'string') values = Date.parse(values);
+          return this.$lte(values, ref)
+        },
+
+        $after: function(values, ref) {
+          if (typeof ref === 'string') ref = Date.parse(ref);
+          if (typeof values === 'string') values = Date.parse(values);
+
+          return this.$gte(values, ref)
         },
 
         $type: function (values, ref) {
@@ -367,6 +380,12 @@
         },
         $between: function (values, ref) {
           return this._satisfies(values, {$gt: ref[0], $lt: ref[1]})
+        },
+        resolve: function(ref) {
+          if (typeof ref==='object' ) {
+            if (ref["$date"]) return Date.parse(ref["$date"])
+          }
+          return ref;
         }
       }
     }
