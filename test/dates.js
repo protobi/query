@@ -38,6 +38,16 @@
       var result = _.query(rows, { dts: {"$before": "2017-07-07"}});
       assert.equal(result.length,   4)
 
+      var result = _.query(rows, { dt:  "2017-02-27"});
+      console.log(result)
+
+      var result = _.query(rows, { dt:  (new Date("2017-02-27"))});
+      console.log(result)
+
+      // var result = _.query(rows, { dt:  1488153600000});
+      // console.log(result)
+      // assert.equal(result.length,   1)
+
     });
   });
 

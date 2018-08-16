@@ -9,7 +9,6 @@
     return rows;
   }
 
-
 // polyfill, since String.startsWith is part of ECMAScript 6,
   if (!String.prototype.startsWith) {
     Object.defineProperty(String.prototype, 'startsWith', {
@@ -147,12 +146,15 @@
           else if (constraint instanceof RegExp)  return this.$regex(value, constraint);
           else if (Array.isArray(constraint))  return this.$in(value, constraint);
           else if (constraint && typeof constraint === 'object') {
-            if (constraint.$regex) return this.$regex(value, new RegExp(constraint.$regex, constraint.$options))
-            for (var key in constraint) {
-              if (!this[key])  return this.$eq(value, constraint, parentKey)
-              else if (!this[key](value, constraint[key], parentKey))  return false;
+            if (constraint instanceof Date) return this.$eq(value, constraint.getTime())
+            else {
+              if (constraint.$regex) return this.$regex(value, new RegExp(constraint.$regex, constraint.$options))
+              for (var key in constraint) {
+                if (!this[key])  return this.$eq(value, constraint, parentKey)
+                else if (!this[key](value, constraint[key], parentKey))  return false;
+              }
+              return true;
             }
-            return true;
           }
           else if (Array.isArray(value)) {
             for (var i = 0; i < value.length; i++)
@@ -161,12 +163,10 @@
           }
           else if (constraint === '' || constraint === null || constraint === undefined)  return this.$null(value);
           else return this.$eq(value, constraint);
-
         },
 
 
         $eq: function (value, constraint) {
-          
           if (value === constraint) return true;
           else if (Array.isArray(value)) {
             for (var i = 0; i < value.length; i++)
@@ -175,6 +175,16 @@
           }
           else if (constraint === null || constraint === undefined || constraint === '')  { return this.$null(value);}
           else if (value ===null ||  value === '' || value === undefined) return false; //we know from above the constraint is not null
+          else if (value instanceof Date) {
+            
+            if (constraint instanceof Date) {
+              return value.getTime() == constraint.getTime();
+            }
+            else if (typeof constraint =='number' ) {
+              return value.getTime() == constraint;
+            }
+            else if (typeof constraint == 'string') return value.getTime() == (new Date(constraint)).getTime()
+          }
           else { return value == constraint};
 
         },
@@ -391,7 +401,7 @@
     }
   };
 
-// Provide means to parse dot notation for deep Mongo queries, optional for performance
+  // Provide means to parse dot notation for deep Mongo queries, optional for performance
   Query.undot = function (obj, key) {
     var keys = key.split('.'), sub = obj;
     for (var i = 0; i < keys.length; i++) {
@@ -407,6 +417,7 @@
   Query.satisfies =  function(row, constraints, getter) {
     return this.lhs._rowsatisfies(row, constraints, getter);
   }
+
   Array.prototype.query = function(q) { return Query.query(this, q); }
 
   //This allows a query object with regex values to be serialized to JSON
