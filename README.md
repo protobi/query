@@ -347,6 +347,42 @@ result = _.query(collection, {
       }, Query.undot);
 ```
 
+
+### $count
+Provide an array of subconstraints, count how many of  those subconstraints are satisfied,
+and test whether that count satisfies a final constraint.  
+
+A `$count` constraint takes the following form: 
+
+```js
+   
+   {  
+      $count: {
+          $constraints:  [  <constraint>, <constraint>, ... ],   // array of subconstraints
+          $constraint:  <constraint>                             // constraint on count of subconstraints
+      }
+  }
+```
+
+For instance, to return a list of rows for which at least two subconstraints are true:
+```js
+    Query.query(rows, {
+              $count: {
+
+                "$constraints": [{likes: {"$gt": 5}}, {colors: "red"}, {title: "Home"}],
+                "$constraint": {$gte: 2}
+              }
+            }
+        ),
+```
+
+For callbacks that use `this` rather than the model attribute, the key name supplied is arbitrary and has no
+effect on the results. If the only test you were performing was like the above test it would make more sense
+to simply use `MyCollection.filter`. However if you are performing other tests or are using the paging / sorting /
+caching options of backbone query, then this functionality is useful.
+
+
+
 Combined Queries
 ================
 
