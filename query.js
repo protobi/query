@@ -43,7 +43,7 @@
 
   var Query = {
 
-    satisfies: function(row, constraints, getter) {
+    satisfies: function (row, constraints, getter) {
       return Query.lhs._rowsatisfies(row, constraints, getter);
     },
 
@@ -53,24 +53,25 @@
       }
     },
 
-    join: function(left_rows, right_rows, left_key, right_key) {
+    join: function (left_rows, right_rows, left_key, right_key) {
       var leftKeyFn, rightKeyFn;
-      if (typeof left_key == 'string') leftKeyFn = function(row) { return row[left_key]; }
+      if (typeof left_key == 'string') leftKeyFn = function (row) {
+        return row[left_key];
+      }
       else leftKeyFn = left_key;
 
       if (!right_key) rightKeyFn = leftKeyFn;
-      if (typeof right_key == 'string') rightKeyFn = function(row) { return row[left_key]; }
+      if (typeof right_key == 'string') rightKeyFn = function (row) {
+        return row[left_key];
+      }
       else rightKeyFn = right_key;
 
       return left_rows;
-
-
     },
-    query: function (rows, constraints, getter) {
 
+    query: function (rows, constraints, getter) {
       if (typeof getter == 'string') {
         var method = getter;
-
         getter = function (obj, key) {
           return obj[method](key);
         };
@@ -78,7 +79,6 @@
       var filter = new Query.Query(constraints, getter);
       return rows.filter(filter);
     },
-
 
     lhs: { // queries that are not yet referenced to a particular attribute, e.g. {$not: {likes: 0}}
 
@@ -97,6 +97,13 @@
         return true;
       },
 
+      $count: function (row, condition, getter) {
+
+        var res = condition.$constraints.map(function (c) {
+          return Query.satisfies(row, c, getter);
+        }).filter(function(v) {return v}).length
+        return this.rhs._satisfies(res, condition.$constraint)
+      },
 
       $not: function (row, constraint, getter) {
         return !this._rowsatisfies(row, constraint, getter);
@@ -173,19 +180,24 @@
               if (this.$eq(value[i], constraint)) return true;
             return false;
           }
-          else if (constraint === null || constraint === undefined || constraint === '')  { return this.$null(value);}
-          else if (value ===null ||  value === '' || value === undefined) return false; //we know from above the constraint is not null
+          else if (constraint === null || constraint === undefined || constraint === '') {
+            return this.$null(value);
+          }
+          else if (value === null || value === '' || value === undefined) return false; //we know from above the constraint is not null
           else if (value instanceof Date) {
-            
+
             if (constraint instanceof Date) {
               return value.getTime() == constraint.getTime();
             }
-            else if (typeof constraint =='number' ) {
+            else if (typeof constraint == 'number') {
               return value.getTime() == constraint;
             }
             else if (typeof constraint == 'string') return value.getTime() == (new Date(constraint)).getTime()
           }
-          else { return value == constraint};
+          else {
+            return value == constraint
+          }
+          ;
 
         },
 
@@ -253,7 +265,7 @@
          * @returns {boolean}
          */
         $null: function (values) {
-          var result ;
+          var result;
           if (values === '' || values === null || values === undefined) {
             return true;
           }
@@ -338,7 +350,7 @@
             }
           }
           else return constraint.test(values);
-          
+
         },
 
         $gte: function (values, ref) {
@@ -350,20 +362,21 @@
         },
 
         $lt: function (values, ref) {
-          return !this.$null(values) &&  values < this.resolve(ref) ;
+          return !this.$null(values) && values < this.resolve(ref);
         },
 
         $lte: function (values, ref) {
           return !this.$null(values) && values <= this.resolve(ref);
         },
 
-        $before: function(values, ref) {
+
+        $before: function (values, ref) {
           if (typeof ref === 'string') ref = Date.parse(ref);
           if (typeof values === 'string') values = Date.parse(values);
           return this.$lte(values, ref)
         },
 
-        $after: function(values, ref) {
+        $after: function (values, ref) {
           if (typeof ref === 'string') ref = Date.parse(ref);
           if (typeof values === 'string') values = Date.parse(values);
 
@@ -391,8 +404,8 @@
         $between: function (values, ref) {
           return this._satisfies(values, {$gt: ref[0], $lt: ref[1]})
         },
-        resolve: function(ref) {
-          if (typeof ref==='object' ) {
+        resolve: function (ref) {
+          if (typeof ref === 'object') {
             if (ref["$date"]) return Date.parse(ref["$date"])
           }
           return ref;
@@ -414,11 +427,13 @@
   Query.lhs.rhs.$any = Query.lhs.rhs.$or;
   Query.lhs.rhs.$all = Query.lhs.rhs.$and;
 
-  Query.satisfies =  function(row, constraints, getter) {
+  Query.satisfies = function (row, constraints, getter) {
     return this.lhs._rowsatisfies(row, constraints, getter);
   }
 
-  Array.prototype.query = function(q) { return Query.query(this, q); }
+  Array.prototype.query = function (q) {
+    return Query.query(this, q);
+  }
 
   //This allows a query object with regex values to be serialized to JSON
   //http://stackoverflow.com/questions/12075927/serialization-of-regexp
@@ -426,7 +441,9 @@
   RegExp.prototype.toJSON = RegExp.prototype.toString;
 
   if (typeof module != 'undefined') module.exports = Query;
-  else if (typeof define != 'undefined' && define.amd)   define('query',[], function() { return Query; })
+  else if (typeof define != 'undefined' && define.amd)   define('query', [], function () {
+    return Query;
+  })
   else if (typeof window != 'undefined') window.Query = Query;
   else if (typeof GLOBAL != undefined && GLOBAL.global) GLOBAL.global.Query = Query;
 
