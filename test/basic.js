@@ -48,6 +48,14 @@
       assert.equal(Query.lhs.rhs.$gt(undefined,-1),false)
 
 
+      assert.equal(Query.lhs.rhs.$in(3,[2,3,4]),true)
+      assert.equal(Query.lhs.rhs.$in(9,[2,3,4]),false)
+      assert.equal(Query.lhs.rhs.$in([3],[2,3,4]),true)
+      assert.equal(Query.lhs.rhs.$in([3,5],[2,3,4]),true)
+      assert.equal(Query.lhs.rhs.$in([1,5],[2,3,4]),false)
+
+
+
       return assert(true);
     });
   })

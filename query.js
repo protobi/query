@@ -296,12 +296,11 @@
           for (var v = 0; v < values.length; v++) {
             var val = values[v];
             for (var i = 0; i < constraint.length; i++) {
-              if (this._satisfies(val, constraint[i])) {
+              if (constraint.indexOf(val) >= 0 || this._satisfies(val, constraint[i])) {
                 result = true;
                 break;
               }
             }
-            result = result || ( constraint.indexOf(val) >= 0);
           }
 
           return result;
