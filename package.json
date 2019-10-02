@@ -1,6 +1,6 @@
 {
   "name": "query",
-  "version": "0.1.2git",
+  "version": "0.1.2",
   "description": "MongoDB Javascript arrays logic",
   "main": "query.js",
   "directories": {
