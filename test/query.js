@@ -932,23 +932,23 @@
       assert.equal(result[0].title, "Home");
       return assert.equal(result[1].title, "About");
     });
-    it("works with underscore chain", function() {
-      var a, q, result;
-      a = create();
-      q = {
-        $or: [
-          {
-            title: "Home"
-          }, {
-            title: "About"
-          }
-        ]
-      };
-      result = _.chain(a).query(q).pluck("title").value();
-      assert.equal(result.length, 2);
-      assert.equal(result[0], "Home");
-      return assert.equal(result[1], "About");
-    });
+    // it("works with underscore chain", function() {
+    //   var a, q, result;
+    //   a = create();
+    //   q = {
+    //     $or: [
+    //       {
+    //         title: "Home"
+    //       }, {
+    //         title: "About"
+    //       }
+    //     ]
+    //   };
+    //   result = _.chain(a).query(q).pluck("title").value();
+    //   assert.equal(result.length, 2);
+    //   assert.equal(result[0], "Home");
+    //   return assert.equal(result[1], "About");
+    // });
     it("works with a getter property", function() {
       var Backbone, a, result;
       Backbone = require("backbone");

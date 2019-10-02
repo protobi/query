@@ -1,16 +1,16 @@
 {
   "name": "query",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "MongoDB Javascript arrays logic",
   "main": "query.js",
   "directories": {
     "test": "test"
   },
   "dependencies": {
-    "backbone": "^1.1.2",
-    "lodash": "^3.5.0"
+    "lodash": "^4.17.15"
   },
   "devDependencies": {
+    "backbone": "^1.4.0",
     "coffee-script": "^1.9.1"
   },
   "scripts": {
