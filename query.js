@@ -149,8 +149,16 @@
         // test whether a single value matches a particular constraint
         _satisfies: function (value, constraint, parentKey) {
 
+
           if (constraint === value)  return true;
-          else if (constraint instanceof RegExp)  return this.$regex(value, constraint);
+
+          if (typeof value==='string' && ((value[0]==='[' && value[value.length-1]===']')|| (value[0]==='{' && value[value.length-1]==='{') )) {
+            try {
+              var value = JSON.parse(value)
+            }
+            catch (e) {}
+          }
+          if (constraint instanceof RegExp)  return this.$regex(value, constraint);
           else if (Array.isArray(constraint))  return this.$in(value, constraint);
           else if (constraint && typeof constraint === 'object') {
             if (constraint instanceof Date) return this.$eq(value, constraint.getTime())
