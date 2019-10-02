@@ -152,7 +152,7 @@
 
           if (constraint === value)  return true;
 
-          if (typeof value==='string' && ((value[0]==='[' && value[value.length-1]===']')|| (value[0]==='{' && value[value.length-1]==='{') )) {
+          if (typeof value==='string' && ((value[0]==='[' )|| (value[0]==='{') )) {
             try {
               var value = JSON.parse(value)
             }
