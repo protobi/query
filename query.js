@@ -361,18 +361,36 @@
         },
 
         $gte: function (values, ref) {
+
+          if (Array.isArray(values)) {
+            var self = this;
+            return values.every(function(v) { return self.$gte(v, ref)})
+          }
+
           return !this.$null(values) && values >= this.resolve(ref)
         },
 
         $gt: function (values, ref) {
+          if (Array.isArray(values)) {
+            var self = this;
+            return values.every(function(v) { return self.$gt(v, ref)})
+          }
           return !this.$null(values) && values > this.resolve(ref);
         },
 
         $lt: function (values, ref) {
+          if (Array.isArray(values)) {
+            var self = this;
+            return values.every(function(v) { return self.$lt(v, ref)})
+          }
           return !this.$null(values) && values < this.resolve(ref);
         },
 
         $lte: function (values, ref) {
+          if (Array.isArray(values)) {
+            var self = this;
+            return values.every(function(v) { return self.$lte(v, ref)})
+          }
           return !this.$null(values) && values <= this.resolve(ref);
         },
 

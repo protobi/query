@@ -19,7 +19,8 @@ describe("Count satisfied constraints", function () {
         likes: 2,
         featured: true,
         content: "dummy content about javascript"
-      }, {
+      }, 
+      {
         title: "Contact",
         colors: ["red", "blue"],
         likes: 20,
@@ -27,17 +28,19 @@ describe("Count satisfied constraints", function () {
       }
     ];
 
+    var result = Query.query(rows, {
+          $count: {
+
+            "$constraints": [{likes: {"$gt": 5}}, {colors: "red"}, {title: "Home"}],
+            "$constraint": {$lte: 1}
+          }
+        },
+        _.get
+    )
+
 
     assert.deepEqual(
-        Query.query(rows, {
-              $count: {
-
-                "$constraints": [{likes: {"$gt": 5}}, {colors: "red"}, {title: "Home"}],
-                "$constraint": {$lte: 1}
-              }
-            },
-            _.get
-        ),
+        result,
         [rows[1]]
     )
 
