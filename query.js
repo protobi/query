@@ -469,7 +469,7 @@
           // must be a prop name from object within the array
           sub = sub.map(function(value){
             // Recursive to handle multiple nested arrays
-            return Query.undot(value, key);
+            return Query.undotArray(value, key);
           });
         } 
       } else {
