@@ -456,10 +456,6 @@
     return this.lhs._rowsatisfies(row, constraints, getter);
   }
 
-  Array.prototype.query = function (q) {
-    return Query.query(this, q);
-  }
-
   //This allows a query object with regex values to be serialized to JSON
   //http://stackoverflow.com/questions/12075927/serialization-of-regexp
   //However, it doesn't solve the problem of parsing them back to regex on input
