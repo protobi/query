@@ -1072,6 +1072,65 @@
       assert.equal(result.length, 1);
       return assert.equal(result[0].title, "Code");
     });
+    it("works with dot notation arrays", function() {
+      var collection, result;
+      collection = [
+        {
+          id: 1,
+          client: [
+            {
+              name: 'ios',
+              accessToken: [
+                {token: 'a', expires: '2019-11-09T09:03:32.393+00:00'},
+                {token: 'b', expires: '2019-11-09T09:03:32.393+00:00'},
+                {token: 'c', expires: '2019-11-09T09:03:32.393+00:00'},
+              ]
+            },
+            {
+              name: 'android',
+              accessToken: [
+                {token: 'd', expires: '2019-11-09T09:03:32.393+00:00'},
+                {token: 'e', expires: '2019-11-09T09:03:32.393+00:00'},
+                {token: 'f', expires: '2019-11-09T09:03:32.393+00:00'},
+              ]
+            },
+          ]
+        },
+        {
+          id: 2,
+          client: [
+            {
+              name: 'ios',
+              accessToken: [
+                {token: 'g', expires: '2019-11-09T09:03:32.393+00:00'},
+                {token: 'h', expires: '2019-11-09T09:03:32.393+00:00'},
+                {token: 'i', expires: '2019-11-09T09:03:32.393+00:00'},
+              ]
+            },
+            {
+              name: 'android',
+              accessToken: [
+                {token: 'a', expires: '2019-11-09T09:03:32.393+00:00'},
+                {token: 'k', expires: '2019-11-09T09:03:32.393+00:00'},
+                {token: 'l', expires: '2019-11-09T09:03:32.393+00:00'},
+              ]
+            },
+          ]
+        }
+      ];
+      result = _.query(collection, {
+        "client.accessToken.token": 'h'
+      }, Logic.undotArray);
+      assert.equal(result.length, 1);
+      assert.equal(result[0].id, 2);
+
+      result = _.query(collection, {
+        "client.accessToken.token": 'a'
+      }, Logic.undotArray);
+      assert.equal(result.length, 2);
+      assert.equal(result[0].id, 1);
+      assert.equal(result[1].id, 2);
+    });
     it("Handles multiple inequalities", function() {
       var a, result;
       a = create();

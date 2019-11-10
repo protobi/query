@@ -448,6 +448,37 @@
     return sub;
   };
 
+  // dot notation for deep Mongo queries including arrays, optional for performance
+  Query.undotArray = function (obj, key) {
+    var keys = key.split('.'), sub = obj;
+    for (var i = 0; i < keys.length; i++) {
+      var key = keys[i];
+      if (Array.isArray(sub)) {
+        var intKey = parseInt(key);
+        if (!isNaN(intKey)) {
+          // Array key was a number e.g some.path.5
+          sub = sub[intKey];
+        } else {
+          // Prop name was not a number
+          if (Array.isArray(sub[0])) {
+            // Array of arrays - flatten
+            sub = sub.reduce(function(result, element) {
+              return result.concat(element);
+            }, []);
+          }
+          // must be a prop name from object within the array
+          sub = sub.map(function(value){
+            // Recursive to handle multiple nested arrays
+            return Query.undot(value, key);
+          });
+        } 
+      } else {
+        sub = sub[key];
+      }
+    }
+    return sub;
+  };
+
   Query.lhs.rhs.$equal = Query.lhs.rhs.$eq;
   Query.lhs.rhs.$any = Query.lhs.rhs.$or;
   Query.lhs.rhs.$all = Query.lhs.rhs.$and;
