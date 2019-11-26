@@ -13,10 +13,10 @@
       assert(Query.lhs.rhs.$eq(4, 4.0))
       assert(!Query.lhs.rhs.$eq(null, 0))
       assert(!Query.lhs.rhs.$eq(undefined, 0))
-      assert(!Query.lhs.rhs.$eq("", 0))
+      assert(Query.lhs.rhs.$eq("", 0))
       assert(!Query.lhs.rhs.$eq(0, null))
       assert(!Query.lhs.rhs.$eq(0, undefined))
-      assert(!Query.lhs.rhs.$eq(0, ""))
+      assert(Query.lhs.rhs.$eq(0, ""))
       
       assert.equal(Query.lhs.rhs.$lte(1,4),true)
       assert.equal(Query.lhs.rhs.$lte(4,4),true)

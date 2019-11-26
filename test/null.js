@@ -22,7 +22,7 @@
 
 
       var result = _.query(rows, { a: 0});
-      assert.equal(result.length,   1)
+      assert.equal(result.length,   2)
 
 
      var result = _.query(rows, { a: ''});

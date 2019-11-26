@@ -182,7 +182,7 @@
 
 
         $eq: function (value, constraint) {
-          if (value === constraint) return true;
+          if (value == constraint) return true;
           else if (Array.isArray(value)) {
             for (var i = 0; i < value.length; i++)
               if (this.$eq(value[i], constraint)) return true;
