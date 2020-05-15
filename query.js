@@ -223,7 +223,6 @@
           else {
             return _.isEqual(value, constraint);
           }
-
         },
 
         $not: function (values, constraint) {
@@ -490,10 +489,11 @@
   Query.satisfies = function (row, constraints, getter) {
     return this.lhs._rowsatisfies(row, constraints, getter);
   }
-
-  Array.prototype.query = function (q) {
-    return Query.query(this, q);
-  }
+  
+  // PSV 2020-05-15 Removed per PR#1
+  // Array.prototype.query = function (q) {
+  //   return Query.query(this, q);
+  // }
 
   //This allows a query object with regex values to be serialized to JSON
   //http://stackoverflow.com/questions/12075927/serialization-of-regexp
