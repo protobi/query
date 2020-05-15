@@ -162,8 +162,9 @@
           else if (Array.isArray(constraint))  return this.$in(value, constraint);
           else if (constraint && typeof constraint === 'object') {
             if (constraint instanceof Date) return this.$eq(value, constraint.getTime())
+            else if (constraint.$regex) return this.$regex(value, new RegExp(constraint.$regex, constraint.$options))
+            else if (constraint instanceof RegExp) return this.$regex(value, constraint)
             else {
-              if (constraint.$regex) return this.$regex(value, new RegExp(constraint.$regex, constraint.$options))
               for (var key in constraint) {
                 if (!this[key])  return this.$eq(value, constraint, parentKey)
                 else if (!this[key](value, constraint[key], parentKey))  return false;
@@ -171,12 +172,13 @@
               return true;
             }
           }
+          else if (constraint === '' || constraint === null || constraint === undefined)  return this.$null(value);
           else if (Array.isArray(value)) {
             for (var i = 0; i < value.length; i++)
               if (this.$eq(value[i], constraint)) return true;
             return false;
           }
-          else if (constraint === '' || constraint === null || constraint === undefined)  return this.$null(value);
+
           else return this.$eq(value, constraint);
         },
 
@@ -278,6 +280,7 @@
             return true;
           }
           else if (Array.isArray(values)) {
+            if (values.length ==0) return true;
             for (var v = 0; v < values.length; v++) {
               if (!this.$null(values[v])) {
                 return false;
@@ -348,16 +351,17 @@
         },
 
         $regex: function (values, constraint) {
-          var result = false;
+          var result = 0;
+
           if (Array.isArray(values)) {
             for (var i = 0; i < values.length; i++) {
-              if (constraint.test(values[i])) {
+              //see https://stackoverflow.com/questions/3891641/regex-test-only-works-every-other-time
+              if ((new RegExp(constraint)).test(values[i])) {
                 return true;
               }
             }
           }
           else return constraint.test(values);
-
         },
 
         $gte: function (values, ref) {

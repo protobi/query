@@ -9,19 +9,43 @@
 
   describe("Underscore Query Tests", function() {
 
-    it("Handles false match for null", function() {
-      var rows = [
-        { a: [1]},
-        { a: [2,3]},
-        { a: [1,3,5]}
-      ]
-      var result = _.query(rows, { a: {"$lte":3}});
-      assert.deepEqual( result, [rows[0], rows[1]])
+    // it("Handles false match for null", function() {
+    //   var rows = [
+    //     { a: [1]},
+    //     { a: [2,3]},
+    //     { a: [1,3,5]}
+    //   ]
+    //   var result = _.query(rows, { a: {"$lte":3}});
+    //   assert.deepEqual( result, [rows[0], rows[1]])
+    //
+    //   result = _.query(rows, { a: {"$gt":1, "$lte":3}});
+    //   // console.log(result)
+    //   assert.deepEqual( result, [rows[1]])
+    // });
 
-      result = _.query(rows, { a: {"$gt":1, "$lte":3}});
-      // console.log(result)
-      assert.deepEqual( result, [rows[1]])
+
+    it("Handles regex with tuples", function() {
+      var rows = [
+        {i: 0, a: [ 'apple']},
+        {i: 1, a: [ 'apple']},
+        {i: 2, a: 'cherry'},
+        {i: 3, a: [ 'cherry', 'date' ]},
+        {i: 4, a: [ 'Apple', 'Berry', 'Date' ]},
+        {i: 5, a: [ 'Berry', 'Apple', 'Date' ]},
+        {i: 6, a: []},
+        {i: 7, a: []},
+        {i: 8, a: []},
+      ]
+
+      var result = _.query(rows, { a: /pple/ig});
+      assert.deepEqual( result.map(row => row.i), [0,1,4,5])
+
+
+      var result = _.query(rows, { a: ''});
+      assert.deepEqual( result.map(row => row.i), [6,7,8])
     });
   });
 
 }).call(this);
+
+
