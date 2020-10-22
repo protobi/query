@@ -375,6 +375,7 @@
       });
       return assert.equal(result.length, 1);
     });
+    
     it("$regex3", function() {
       var a, result;
       a = create();

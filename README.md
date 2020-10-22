@@ -472,6 +472,41 @@ a = new Backbone.Collection([
         title: "about"
       }, "get");
 ```
+
+Non-standard extensions
+=======================
+
+### $count
+Tests whether a count meets a certain constraint
+
+```js
+_.query( rows, {    
+    $count: {
+       "$constraints": [{likes: {"$gt": 5}}, {colors: "red"}, {title: "Home"}],
+       "$constraint": {$lte: 1}
+     }
+   },
+   _.get
+)
+ 
+//Returns all models which have a "title" attribute that
+//contains the string "Test", "test", "tEst","tesT", etc.
+```
+
+### $same
+Tests whether an array of columns have the same value
+
+```js
+_.query( rows, {    
+    $same: [ "q1a","q1b","q1c","q1d],
+   _.get
+)
+ 
+//Returns all models which have a "title" attribute that
+//contains the string "Test", "test", "tEst","tesT", etc.
+```
+
+
 History
 ====================
 This module originated as a proprietary module for Protobi core, implementing MongoDB syntax for Javascript data arrays.
