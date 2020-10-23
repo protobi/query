@@ -494,7 +494,7 @@ _.query( rows, {
 ```
 
 ### $same
-Tests whether an array of columns have the same value
+Tests whether an arr columns have the same value
 
 ```js
 _.query( rows, {    

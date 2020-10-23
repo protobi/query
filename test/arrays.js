@@ -9,19 +9,19 @@
 
   describe("Underscore Query Tests", function() {
 
-    // it("Handles false match for null", function() {
-    //   var rows = [
-    //     { a: [1]},
-    //     { a: [2,3]},
-    //     { a: [1,3,5]}
-    //   ]
-    //   var result = _.query(rows, { a: {"$lte":3}});
-    //   assert.deepEqual( result, [rows[0], rows[1]])
-    //
-    //   result = _.query(rows, { a: {"$gt":1, "$lte":3}});
-    //   // console.log(result)
-    //   assert.deepEqual( result, [rows[1]])
-    // });
+    it("Handles false match for null", function() {
+      var rows = [
+        { a: [1]},
+        { a: [2,3]},
+        { a: [1,3,5]}
+      ]
+      var result = _.query(rows, { a: {"$lte":3}});
+      assert.deepEqual( result, [rows[0], rows[1]])
+    
+      result = _.query(rows, { a: {"$gt":1, "$lte":3}});
+      // console.log(result)
+      assert.deepEqual( result, [rows[1]])
+    });
 
 
     it("Handles regex with tuples", function() {

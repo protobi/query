@@ -9,6 +9,14 @@
     return rows;
   }
 
+  function isNA(val) {
+    return val === '' || val === undefined || val === null
+  }
+
+  function notNA(val) {
+    return val !== '' && val !== undefined && val !== null
+  }
+
 // polyfill, since String.startsWith is part of ECMAScript 6,
   if (!String.prototype.startsWith) {
     Object.defineProperty(String.prototype, 'startsWith', {
@@ -48,6 +56,9 @@
     },
 
     Query: function (constraints, getter) {
+      if (typeof constraints == 'string') {
+        return new Function("row", "try { with (row) { return " + constraints + "} } catch (e) { console.error(e)}")
+      }
       return function (row) {
         return Query.lhs._rowsatisfies(row, constraints, getter);
       }
@@ -97,19 +108,46 @@
         return true;
       },
 
+
+      /**
+       * Custom extension that returns true iff the number of given constraints satisfied by this row equals a given number.
+       * This can be used to test logic of the form "Exactly N of the following statements are true"
+       * @param row
+       * @param condition
+       * @param getter
+       * @returns {*}
+       */
       $count: function (row, condition, getter) {
 
         var res = condition.$constraints.map(function (c) {
           return Query.satisfies(row, c, getter);
-        }).filter(function(v) {return v}).length
+        }).filter(function (v) {
+          return v
+        }).length
         return this.rhs._satisfies(res, condition.$constraint)
       },
 
-      $same: function(row, condition, getter) {
+      /**
+       * Custom extension that returns true iff all values in an array are equal (ignoring empty string, null and undefined).
+       * This can be used to test if a survey respondent gave all the same answer to a particular set of questions.
+       *
+       * @method $same
+       * @param row
+       * @param condition
+       * @param getter
+       * @returns {boolean}
+       */
+
+      $same: function (row, condition, getter) {
         if (Array.isArray(condition)) {
-          var vals = condition.map(function(key) { return (getter ? getter(row, key) : row[key])})
-          if (vals.length ==0) return true;
-          for (var i=0; i<vals.length; i++) {
+          var vals = condition
+              .map(function (key) {
+                return (getter ? getter(row, key) : row[key])
+              })
+              .filter(notNA)
+
+          if (vals.length == 0) return true;
+          for (var i = 0; i < vals.length; i++) {
             if (vals[i] != vals[0]) return false
           }
           return true
@@ -158,17 +196,18 @@
         $cb: function (value, constraint, parentKey) {
           return constraint(value)
         },
+
         // test whether a single value matches a particular constraint
         _satisfies: function (value, constraint, parentKey) {
-
-
           if (constraint === value)  return true;
-
-          if (typeof value==='string' && ((value[0]==='[' )|| (value[0]==='{') )) {
-            try {
-              var value = JSON.parse(value)
+          if (typeof value === 'string') {
+            if (((value[0] === '[' ) || (value[0] === '{') )) {
+              try {
+                value = JSON.parse(value)
+              }
+              catch (e) {
+              }
             }
-            catch (e) {}
           }
           if (constraint instanceof RegExp)  return this.$regex(value, constraint);
           else if (Array.isArray(constraint))  return this.$in(value, constraint);
@@ -291,7 +330,7 @@
             return true;
           }
           else if (Array.isArray(values)) {
-            if (values.length ==0) return true;
+            if (values.length == 0) return true;
             for (var v = 0; v < values.length; v++) {
               if (!this.$null(values[v])) {
                 return false;
@@ -379,7 +418,9 @@
 
           if (Array.isArray(values)) {
             var self = this;
-            return values.every(function(v) { return self.$gte(v, ref)})
+            return values.every(function (v) {
+              return self.$gte(v, ref)
+            })
           }
 
           return !this.$null(values) && values >= this.resolve(ref)
@@ -388,7 +429,9 @@
         $gt: function (values, ref) {
           if (Array.isArray(values)) {
             var self = this;
-            return values.every(function(v) { return self.$gt(v, ref)})
+            return values.every(function (v) {
+              return self.$gt(v, ref)
+            })
           }
           return !this.$null(values) && values > this.resolve(ref);
         },
@@ -396,7 +439,9 @@
         $lt: function (values, ref) {
           if (Array.isArray(values)) {
             var self = this;
-            return values.every(function(v) { return self.$lt(v, ref)})
+            return values.every(function (v) {
+              return self.$lt(v, ref)
+            })
           }
           return !this.$null(values) && values < this.resolve(ref);
         },
@@ -404,7 +449,9 @@
         $lte: function (values, ref) {
           if (Array.isArray(values)) {
             var self = this;
-            return values.every(function(v) { return self.$lte(v, ref)})
+            return values.every(function (v) {
+              return self.$lte(v, ref)
+            })
           }
           return !this.$null(values) && values <= this.resolve(ref);
         },
@@ -477,16 +524,16 @@
           // Prop name was not a number
           if (Array.isArray(sub[0])) {
             // Array of arrays - flatten
-            sub = sub.reduce(function(result, element) {
+            sub = sub.reduce(function (result, element) {
               return result.concat(element);
             }, []);
           }
           // must be a prop name from object within the array
-          sub = sub.map(function(value){
+          sub = sub.map(function (value) {
             // Recursive to handle multiple nested arrays
             return Query.undotArray(value, key);
           });
-        } 
+        }
       } else {
         sub = sub[key];
       }
@@ -501,7 +548,7 @@
   Query.satisfies = function (row, constraints, getter) {
     return this.lhs._rowsatisfies(row, constraints, getter);
   }
-  
+
   // PSV 2020-05-15 Removed per PR#1
   // Array.prototype.query = function (q) {
   //   return Query.query(this, q);
