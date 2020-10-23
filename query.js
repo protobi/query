@@ -52,7 +52,8 @@
   var Query = {
 
     satisfies: function (row, constraints, getter) {
-      return Query.lhs._rowsatisfies(row, constraints, getter);
+      if (typeof constraints ==='string') return this.Query(constraints, getter) (row)
+      else return Query.lhs._rowsatisfies(row, constraints, getter);
     },
 
     Query: function (constraints, getter) {
@@ -544,10 +545,6 @@
   Query.lhs.rhs.$equal = Query.lhs.rhs.$eq;
   Query.lhs.rhs.$any = Query.lhs.rhs.$or;
   Query.lhs.rhs.$all = Query.lhs.rhs.$and;
-
-  Query.satisfies = function (row, constraints, getter) {
-    return this.lhs._rowsatisfies(row, constraints, getter);
-  }
 
   // PSV 2020-05-15 Removed per PR#1
   // Array.prototype.query = function (q) {
