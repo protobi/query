@@ -31,6 +31,15 @@
      var result = _.query(rows, { a: undefined});
      assert.equal(result.length, 3)
 
+           var result = _.query(rows, { a: {$lte: 0}});
+      assert.equal(result.length, 1)
+
+      var result = _.query(rows, { a: {$lt: 0}});
+      console.log("???", result.length)
+      assert.equal(result.length, 0)
+
+
+
     });
   });
 

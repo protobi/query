@@ -444,6 +444,7 @@
               return self.$lt(v, ref)
             })
           }
+          console.log(values, ref, this.resolve(ref), this.$null(values),values < this.resolve(ref))
           return !this.$null(values) && values < this.resolve(ref);
         },
 
@@ -492,7 +493,7 @@
         $between: function (values, ref) {
           return this._satisfies(values, {$gt: ref[0], $lt: ref[1]})
         },
-        resolve: function (ref) {
+          resolve: function (ref) {
           if (typeof ref === 'object') {
             if (ref["$date"]) return Date.parse(ref["$date"])
           }
@@ -545,6 +546,10 @@
   Query.lhs.rhs.$equal = Query.lhs.rhs.$eq;
   Query.lhs.rhs.$any = Query.lhs.rhs.$or;
   Query.lhs.rhs.$all = Query.lhs.rhs.$and;
+  
+  Query.valueSatisfiesConstraint = function(value, constraint) {
+    return this.lhs.rhs._satisfies(value, constraint)
+  }
 
   // PSV 2020-05-15 Removed per PR#1
   // Array.prototype.query = function (q) {
