@@ -35,7 +35,6 @@
       assert.equal(result.length, 1)
 
       var result = _.query(rows, { a: {$lt: 0}});
-      console.log("???", result.length)
       assert.equal(result.length, 0)
 
 

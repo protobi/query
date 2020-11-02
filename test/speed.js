@@ -20,7 +20,6 @@
       res = _.query(rows, {a: {$lte: 500}})
       var end = new Date();
       var duration = end - start
-      console.log(duration)
       assert(duration < 1000)
       done();
     })

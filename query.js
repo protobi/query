@@ -17,6 +17,12 @@
     return val !== '' && val !== undefined && val !== null
   }
 
+  function _get(row, key, getter) {
+    if (typeof key == 'number') return key;
+    else if (getter) return getter(row, key)
+    else return row[key]
+  }
+
 // polyfill, since String.startsWith is part of ECMAScript 6,
   if (!String.prototype.startsWith) {
     Object.defineProperty(String.prototype, 'startsWith', {
@@ -139,22 +145,7 @@
        * @returns {boolean}
        */
 
-      $same: function (row, condition, getter) {
-        if (Array.isArray(condition)) {
-          var vals = condition
-              .map(function (key) {
-                return (getter ? getter(row, key) : row[key])
-              })
-              .filter(notNA)
 
-          if (vals.length == 0) return true;
-          for (var i = 0; i < vals.length; i++) {
-            if (vals[i] != vals[0]) return false
-          }
-          return true
-        }
-        throw new Error("$same requires array value ")
-      },
 
       $not: function (row, constraint, getter) {
         return !this._rowsatisfies(row, constraint, getter);
@@ -185,12 +176,97 @@
         return !this.$or(row, constraint, getter)
       },
 
+
+
       $where: function (values, ref) {
         var fn = (typeof ref == 'string') ? new Function(ref) : ref;
         var res = fn.call(values)
         return res;
       },
 
+      $expr: function(row, expr, getter) {
+        var val;
+        var result = true
+
+        for (var key in expr) {
+          if (this.rhs[key]) {
+            var parts = expr[key]
+            var constraint = parts[0]
+            var aggrexp =  parts[1]
+            
+            var operation =Object.keys(aggrexp)[0]
+            var operands = aggrexp[operation]
+            var value = this.agg[operation](row, operands, getter)
+            result = result && this.rhs[key](value, constraint)
+
+          }
+        }
+        return result;
+      },
+
+      /**
+       * Partial implementation of MongoDB aggregate expressions
+       */
+      agg: {
+        $sum: function(row, operands, getter) {
+          var sum = 0;
+          for (var i=0; i<operands.length; i++) {
+            var key = operands[i]
+            var val = _get(row,key,getter)
+            if (val == +val) {
+              sum += +val;
+            }
+          }
+          return sum;
+        },
+
+        $min: function(row, operands, getter) {
+          var min = +Infinity;
+          for (var i=0; i<operands.length; i++) {
+            var key = operands[i]
+            var val = _get(row,key,getter)
+            if (val < min) {
+              min = val
+            }
+          }
+          return min;
+        },
+
+        $max: function(row, operands, getter) {
+          var max = -Infinity;
+          for (var i=0; i<operands.length; i++) {
+            var key = operands[i]
+            var val = _get(row,key,getter)
+            if (val > max) {
+              max = val
+            }
+          }
+          return max;
+        },
+
+        $divide: function(row, operands, getter) {
+          var num =  _get(row,operands[0],getter)
+          var den =  _get(row,operands[1],getter)
+          return num / den
+        },
+        
+        $same: function (row, condition, getter) {
+          if (Array.isArray(condition)) {
+            var vals = condition
+                .map(function (key) {
+                  return (getter ? getter(row, key) : row[key])
+                })
+                .filter(notNA)
+
+            if (vals.length == 0) return true;
+            for (var i = 0; i < vals.length; i++) {
+              if (vals[i] != vals[0]) return false
+            }
+            return true
+          }
+          throw new Error("$same requires array value ")
+        },
+      },
 
       rhs: {  // queries that reference a particular attribute, e.g. {likes: {$gt: 10}}
 
@@ -444,7 +520,6 @@
               return self.$lt(v, ref)
             })
           }
-          console.log(values, ref, this.resolve(ref), this.$null(values),values < this.resolve(ref))
           return !this.$null(values) && values < this.resolve(ref);
         },
 

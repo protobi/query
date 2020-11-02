@@ -473,6 +473,57 @@ a = new Backbone.Collection([
       }, "get");
 ```
 
+
+Aggregate expressions
+=====================
+
+
+### $expr
+Evaluates an aggregate expression.  The constraints are specified as
+arrays where the first argument is the constraint value, and the second the aggregate expression 
+
+
+
+### $sum
+
+```js
+_.query( rows, {    
+    $expr: {
+        $ne: [ 
+            100,
+            {  $sum: ["q1a", "q1b", "q1c", "q1d" }
+        ]
+    }      
+   },
+   _.get
+)
+ 
+// Returns all models  where the  sum of q1a, q1b, q1c, q1d is not 100.
+// Strings that evaluate to numbers are evaluated as numbers 
+// so "4" + "3" = 7 not "43"
+```
+
+### $min
+
+### $max
+
+### $same
+Tests whether all operands are equal to each other
+
+```js
+_.query( rows, {  
+    $expr: {
+        $eq: [ true, { $same: [ "q1a","q1b","q1c","q1d] ]
+    ,
+   _.get
+)
+ 
+//Returns all models q1a, q1b, q1c, q1d are equal (ignoring null, undefined and empty strings) 
+//contains the string "Test", "test", "tEst","tesT", etc.
+```
+###
+
+
 Non-standard extensions
 =======================
 
@@ -489,22 +540,10 @@ _.query( rows, {
    _.get
 )
  
-//Returns all models which have a "title" attribute that
-//contains the string "Test", "test", "tEst","tesT", etc.
+//Returns all models where at most one of the conditions are satisfied.
 ```
 
-### $same
-Tests whether an arr columns have the same value
 
-```js
-_.query( rows, {    
-    $same: [ "q1a","q1b","q1c","q1d],
-   _.get
-)
- 
-//Returns all models which have a "title" attribute that
-//contains the string "Test", "test", "tEst","tesT", etc.
-```
 
 
 History
