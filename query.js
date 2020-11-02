@@ -145,7 +145,22 @@
        * @returns {boolean}
        */
 
+      $same: function (row, condition, getter) {
+        if (Array.isArray(condition)) {
+          var vals = condition
+              .map(function (key) {
+                return (getter ? getter(row, key) : row[key])
+              })
+              .filter(notNA)
 
+          if (vals.length == 0) return true;
+          for (var i = 0; i < vals.length; i++) {
+            if (vals[i] != vals[0]) return false
+          }
+          return true
+        }
+        throw new Error("$same requires array value ")
+      },
 
       $not: function (row, constraint, getter) {
         return !this._rowsatisfies(row, constraint, getter);
