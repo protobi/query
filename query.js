@@ -58,7 +58,7 @@
   var Query = {
 
     satisfies: function (row, constraints, getter) {
-      if (typeof constraints ==='string') return this.Query(constraints, getter) (row)
+      if (typeof constraints === 'string') return this.Query(constraints, getter)(row)
       else return Query.lhs._rowsatisfies(row, constraints, getter);
     },
 
@@ -108,7 +108,7 @@
           }
           else {
             var val = (getter ? getter(row, key) : row[key]);
-            var res = this.rhs._satisfies(val, constraints[key], key)
+            var res = this.rhs._satisfies(val, constraints[key], row, getter)
             if (!res) return false;
           }
         }
@@ -192,14 +192,13 @@
       },
 
 
-
       $where: function (values, ref) {
         var fn = (typeof ref == 'string') ? new Function(ref) : ref;
         var res = fn.call(values)
         return res;
       },
 
-      $expr: function(row, expr, getter) {
+      $expr: function (row, expr, getter) {
         var val;
         var result = true
 
@@ -207,9 +206,9 @@
           if (this.rhs[key]) {
             var parts = expr[key]
             var constraint = parts[0]
-            var aggrexp =  parts[1]
-            
-            var operation =Object.keys(aggrexp)[0]
+            var aggrexp = parts[1]
+
+            var operation = Object.keys(aggrexp)[0]
             var operands = aggrexp[operation]
             var value = this.agg[operation](row, operands, getter)
             result = result && this.rhs[key](value, constraint)
@@ -223,11 +222,11 @@
        * Partial implementation of MongoDB aggregate expressions
        */
       agg: {
-        $sum: function(row, operands, getter) {
+        $sum: function (row, operands, getter) {
           var sum = 0;
-          for (var i=0; i<operands.length; i++) {
+          for (var i = 0; i < operands.length; i++) {
             var key = operands[i]
-            var val = _get(row,key,getter)
+            var val = _get(row, key, getter)
             if (val == +val) {
               sum += +val;
             }
@@ -235,11 +234,11 @@
           return sum;
         },
 
-        $min: function(row, operands, getter) {
+        $min: function (row, operands, getter) {
           var min = +Infinity;
-          for (var i=0; i<operands.length; i++) {
+          for (var i = 0; i < operands.length; i++) {
             var key = operands[i]
-            var val = _get(row,key,getter)
+            var val = _get(row, key, getter)
             if (val < min) {
               min = val
             }
@@ -247,11 +246,11 @@
           return min;
         },
 
-        $max: function(row, operands, getter) {
+        $max: function (row, operands, getter) {
           var max = -Infinity;
-          for (var i=0; i<operands.length; i++) {
+          for (var i = 0; i < operands.length; i++) {
             var key = operands[i]
-            var val = _get(row,key,getter)
+            var val = _get(row, key, getter)
             if (val > max) {
               max = val
             }
@@ -259,12 +258,12 @@
           return max;
         },
 
-        $divide: function(row, operands, getter) {
-          var num =  _get(row,operands[0],getter)
-          var den =  _get(row,operands[1],getter)
+        $divide: function (row, operands, getter) {
+          var num = _get(row, operands[0], getter)
+          var den = _get(row, operands[1], getter)
           return num / den
         },
-        
+
         $same: function (row, condition, getter) {
           if (Array.isArray(condition)) {
             var vals = condition
@@ -285,12 +284,12 @@
 
       rhs: {  // queries that reference a particular attribute, e.g. {likes: {$gt: 10}}
 
-        $cb: function (value, constraint, parentKey) {
+        $cb: function (value, constraint) {
           return constraint(value)
         },
 
         // test whether a single value matches a particular constraint
-        _satisfies: function (value, constraint, parentKey) {
+        _satisfies: function (value, constraint, row, getter) {
           if (constraint === value)  return true;
           if (typeof value === 'string') {
             if (((value[0] === '[' ) || (value[0] === '{') )) {
@@ -309,8 +308,8 @@
             else if (constraint instanceof RegExp) return this.$regex(value, constraint)
             else {
               for (var key in constraint) {
-                if (!this[key])  return this.$eq(value, constraint, parentKey)
-                else if (!this[key](value, constraint[key], parentKey))  return false;
+                if (!this[key])  return this.$eq(value, constraint, row, getter)
+                else if (!this[key](value, constraint[key], row, getter))  return false;
               }
               return true;
             }
@@ -322,7 +321,7 @@
             return false;
           }
 
-          else return this.$eq(value, constraint);
+          else return this.$eq(value, constraint, row, getter);
         },
 
 
@@ -355,7 +354,7 @@
         },
 
 
-        $exists: function (value, constraint, parentKey) {
+        $exists: function (value, constraint) {
           return (value != undefined) == (constraint && true);
         },
 
@@ -377,24 +376,24 @@
           return !this._satisfies(values, constraint);
         },
 
-        $nor: function (values, constraint, parentKey) {
-          return !this.$or(values, constraint, parentKey);
+        $nor: function (values, constraint) {
+          return !this.$or(values, constraint);
         },
 
-        $and: function (values, constraint, parentKey) {
+        $and: function (values, constraint) {
 
           if (!Array.isArray(constraint)) {
             throw new Error("Logic $and takes array of constraint objects");
           }
           for (var i = 0; i < constraint.length; i++) {
-            var res = this._satisfies(values, constraint[i], parentKey);
+            var res = this._satisfies(values, constraint[i]);
             if (!res) return false;
           }
           return true;
         },
 
         // Identical to $in, but allows for different semantics
-        $or: function (values, constraint, parentKey) {
+        $or: function (values, constraint) {
 
           if (!Array.isArray(values)) {
             values = [values];
@@ -402,7 +401,7 @@
 
           for (var v = 0; v < values.length; v++) {
             for (var i = 0; i < constraint.length; i++) {
-              if (this._satisfies(values[v], constraint[i], parentKey)) {
+              if (this._satisfies(values[v], constraint[i])) {
                 return true;
               }
             }
@@ -477,7 +476,7 @@
           return values.endsWith(constraint);
         },
 
-        $elemMatch: function (values, constraint, parentKey) {
+        $elemMatch: function (values, constraint) {
           for (var i = 0; i < values.length; i++) {
             if (Query.lhs._rowsatisfies(values[i], constraint)) return true;
           }
@@ -583,7 +582,7 @@
         $between: function (values, ref) {
           return this._satisfies(values, {$gt: ref[0], $lt: ref[1]})
         },
-          resolve: function (ref) {
+        resolve: function (ref) {
           if (typeof ref === 'object') {
             if (ref["$date"]) return Date.parse(ref["$date"])
           }
@@ -636,8 +635,8 @@
   Query.lhs.rhs.$equal = Query.lhs.rhs.$eq;
   Query.lhs.rhs.$any = Query.lhs.rhs.$or;
   Query.lhs.rhs.$all = Query.lhs.rhs.$and;
-  
-  Query.valueSatisfiesConstraint = function(value, constraint) {
+
+  Query.valueSatisfiesConstraint = function (value, constraint) {
     return this.lhs.rhs._satisfies(value, constraint)
   }
 

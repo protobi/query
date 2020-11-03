@@ -14,14 +14,14 @@ describe("Count satisfied constraints", function () {
     ]
 
     var r1 = Query.query(rows, {
-        $expr: {
-          $eq: [100, {$sum: ["x0", "x1", "x2"]}]
+      $expr: {
+        $eq: [100, {$sum: ["x0", "x1", "x2"]}]
       }
     })
 
     assert.deepEqual(
         r1,
-        [rows[1],  rows[3]]
+        [rows[1], rows[3]]
     )
 
     var r2 = Query.query(rows, {
@@ -32,7 +32,7 @@ describe("Count satisfied constraints", function () {
 
     assert.deepEqual(
         r2,
-        [rows[0],  rows[2]]
+        [rows[0], rows[2]]
     )
 
     var r3 = Query.query(rows, {
@@ -45,13 +45,13 @@ describe("Count satisfied constraints", function () {
         r3,
         [rows[1], rows[3]]
     )
-    
+
     var r4 = Query.query(rows, {
       $expr: {
         $eq: [10, {$min: ["x0", "x2"]}]
       }
     })
-    
+
     assert.deepEqual(
         r4,
         [rows[1], rows[3]]
@@ -73,14 +73,45 @@ describe("Count satisfied constraints", function () {
       {x0: null, x1: '', x2: undefined, x3: 1, x4: 0, x6_other: "well"},
     ]
 
-    var result = Query.query(rows, { $expr: {
+    var result = Query.query(rows, {
+          $expr: {
 
-          $eq: [true,  {$same: ['x0', 'x1', 'x2', 'x3', 'x4', 'x5', 'x6']} ]}},
+            $eq: [true, {$same: ['x0', 'x1', 'x2', 'x3', 'x4', 'x5', 'x6']}]
+          }
+        },
         _.get
     )
     assert.deepEqual(
         result,
         [rows[1], rows[2], rows[3], rows[4], rows[5], rows[6], rows[7], rows[8]]
+    )
+
+  })
+
+  it('sum, min, max', function () {
+    var rows = [
+      {a: 0, x0: 0, x1: 50, x2: 30, x4: 20},
+      {a: 10, x0: 10, x1: 50, x2: 40, x4: 0},
+      {a: 20, x0: 25, x1: 50, x2: 30, x4: -5},
+      {a: 30, x0: 40, x1: 50, x2: 10, x4: 0},
+    ]
+
+    var r1 = Query.query(rows, {
+      $and: [
+        {
+          $expr: {
+            $lt: [10, {$min: ["x0", "x1", "x2"]}]
+          }
+        }, 
+        {
+          a: {$not: 0}
+        }
+      ]
+    })
+
+    assert.deepEqual(
+        r1,
+        []
     )
 
   })

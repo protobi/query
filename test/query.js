@@ -1423,7 +1423,7 @@
             $lt: 20
           }
         }
-      ]
+      ] 
     };
     result = _.query(a, query);
     assert.equal(result.length, 1);
