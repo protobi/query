@@ -64,7 +64,10 @@
 
     Query: function (constraints, getter) {
       if (typeof constraints == 'string') {
-        return new Function("row", "try { with (row) { return " + constraints + "} } catch (e) { console.error(e)}")
+        return new Function(
+            "row", "process", "module", "exports", "__dirname", "__filename", "require", "console", "setImmediate", "setTimeout", "setInterval", "global", "WebAssembly",
+            "try { with (row) { return " + constraints + "} } catch (e) { console.error(e)}"
+        )
       }
       return function (row) {
         return Query.lhs._rowsatisfies(row, constraints, getter);
@@ -191,10 +194,18 @@
         return !this.$or(row, constraint, getter)
       },
 
-
-      $where: function (values, ref) {
-        var fn = (typeof ref == 'string') ? new Function(ref) : ref;
-        var res = fn.call(values)
+      $where: function (row, fnDef) {
+        console.log([row, fnDef])
+        var fn 
+        if (typeof fnDef === 'function') fn = fnDef;
+        else if (typeof fnDef == 'string') {
+          fn = new Function(
+              "row", "process", "module", "exports", "__dirname", "__filename", "require", "console", "setImmediate", "setTimeout", "setInterval", "global", "WebAssembly",
+              fnDef
+          )
+        }
+        else fn = _.identity
+        var res = fn.call(row)
         return res;
       },
 

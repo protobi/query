@@ -1543,6 +1543,15 @@
     return assert.equal(result.length, 1);
   });
 
+  it("Handles $where function", function() {
+    var a, result;
+    console.log("Handles where function...")
+    a = create();
+    result = _.query(a, {
+      $where: "return this.likes === 12;"
+    });
+    return assert.equal(result.length, 1);
+  });
   it("Handles $where string", function() {
     var a, result;
     a = create();
@@ -1551,8 +1560,19 @@
     });
     return assert.equal(result.length, 2);
   });
-
-
+  it("Handles js injection", function() {
+    var a, result;
+    a = create();
+    try {
+      result = _.query(a, {
+        $where: " console.log('PWND!'); process.exit();  return this.likes >= 12"
+      });
+      return assert(false, 'Exception not thrown')
+    }
+    catch (e) {
+      return assert(true, 'Exception  thrown')
+    }
+  });
 }).call(this);
 
 //# sourceMappingURL=logic.js.map
