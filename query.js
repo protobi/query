@@ -63,12 +63,12 @@
     },
 
     Query: function (constraints, getter) {
-      if (typeof constraints == 'string') {
-        return new Function(
-            "row", "process", "module", "exports", "__dirname", "__filename", "require", "console", "setImmediate", "setTimeout", "setInterval", "global", "WebAssembly",
-            "try { with (row) { return " + constraints + "} } catch (e) { console.error(e)}"
-        )
-      }
+      // if (typeof constraints == 'string') {
+      //   return new Function(
+      //       "row", "process", "module", "exports", "__dirname", "__filename", "require", "setImmediate", "setTimeout", "setInterval", "global", "WebAssembly",
+      //       "try { with (row) { return " + constraints + "} } catch (e) { console.error(e)}"
+      //   )
+      // }
       return function (row) {
         return Query.lhs._rowsatisfies(row, constraints, getter);
       }
