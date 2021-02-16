@@ -195,7 +195,6 @@
       },
 
       $where: function (row, fnDef) {
-        console.log([row, fnDef])
         var fn 
         if (typeof fnDef === 'function') fn = fnDef;
         else if (typeof fnDef == 'string') {
@@ -250,6 +249,7 @@
           for (var i = 0; i < operands.length; i++) {
             var key = operands[i]
             var val = _get(row, key, getter)
+            if (val == +val) val = +val;
             if (val < min) {
               min = val
             }
@@ -262,6 +262,7 @@
           for (var i = 0; i < operands.length; i++) {
             var key = operands[i]
             var val = _get(row, key, getter)
+            if (val == +val) val = +val;
             if (val > max) {
               max = val
             }

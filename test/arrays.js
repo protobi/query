@@ -38,11 +38,11 @@
       ]
 
       var result = _.query(rows, { a: /pple/ig});
-      assert.deepEqual( result.map(row => row.i), [0,1,4,5])
+      assert.deepEqual( result.map(function(row) {return row.i}), [0,1,4,5])
 
 
       var result = _.query(rows, { a: ''});
-      assert.deepEqual( result.map(row => row.i), [6,7,8])
+      assert.deepEqual( result.map(function(row) {return row.i}), [6,7,8])
     });
   });
 
