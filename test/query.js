@@ -463,6 +463,7 @@
           }
         ]
       });
+      console.log("result",result)
       assert.equal(result.length, 1);
       return assert.equal(result[0].title, "Home");
     });

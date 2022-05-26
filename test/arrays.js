@@ -16,9 +16,12 @@
         {a: [1, 3, 5]}
       ]
       var result = _.query(rows, {a: {"$lte": 3}});
-      assert.deepEqual(result, rows)
+      console.log("result",result)
+      assert.deepEqual(result, [rows[0],rows[1]])
+
       result = _.query(rows, {a: {"$gt": 1, "$lte": 3}});
-      assert.deepEqual(result, [rows[1],rows[2]])
+
+      assert.deepEqual(result, [rows[1]])
     });
 
 
@@ -36,13 +39,14 @@
       ]
 
       var result = _.query(rows, {a: /pple/ig});
+      console.log("result",result)
       assert.deepEqual(result.map(function (row) {
         return row.i
       }), [0, 1, 4, 5])
 
 
       var result = _.query(rows, {a: ''});
-
+      console.log("result",result)
       assert.deepEqual(result.map(function (row) {
         return row.i
       }), [6, 7, 8])

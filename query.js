@@ -301,25 +301,12 @@
             if (((value[0] === '[') || (value[0] === '{'))) {
               try {
                 value = JSON.parse(value)
-              } catch (e) {
+              }
+              catch (e) {
               }
             }
           }
-          else if (Array.isArray(value) && !(constraint && typeof constraint == 'object' && ('$deepEquals' in constraint  || '$any' in constraint || '$all' in constraint || '$size' in constraint || '$type' in constraint))) {
-
-            if (value.length == 0) {
-              return this._satisfies('', constraint, row, getter)
-            }
-            else {
-              for (var i = 0; i < value.length; i++) {
-                if (this._satisfies(value[i], constraint, row, getter)) return true;
-              }
-              return false;
-            }
-          }
-
-
-          if (constraint instanceof RegExp) return this.$regex(value, new RegExp(constraint));
+          if (constraint instanceof RegExp)  return this.$regex(value, new RegExp(constraint))
           else if (Array.isArray(constraint)) return this.$in(value, constraint);
           else if (constraint && typeof constraint === 'object') {
             if (constraint instanceof Date) return this.$eq(value, constraint.getTime())
@@ -334,6 +321,11 @@
             }
           }
           else if (constraint === '' || constraint === null || constraint === undefined) return this.$null(value);
+          else if (Array.isArray(value)) {
+            for (var i = 0; i < value.length; i++)
+              if (this.$eq(value[i], constraint)) return true;
+            return false;
+          }
 
           else return this.$eq(value, constraint, row, getter);
         },
@@ -371,14 +363,10 @@
 
         $deepEquals: function (value, constraint) {
           if (typeof _ == 'undefined' || typeof _.isEqual == 'undefined') {
-            var result = JSON.stringify(value) == JSON.stringify(constraint);
-            console.log("$deepEquals.1", JSON.stringify(value), JSON.stringify(constraint), result);
-            return result
+            return JSON.stringify(value) == JSON.stringify(constraint); //
           }
           else {
-            var result = _.isEqual(value, constraint);
-            console.log("$deepEquals.2", JSON.stringify(value), JSON.stringify(constraint), result);
-            return result
+            return _.isEqual(value, constraint);
           }
         },
 
@@ -473,7 +461,7 @@
         },
 
         $likeI: function (values, constraint) {
-          return values.toLowerCase().indexOf(constraint) >= 0;
+          return String(values).toLowerCase().indexOf(constraint) >= 0;
         },
 
         $like: function (values, constraint) {
@@ -491,10 +479,9 @@
         },
 
         $elemMatch: function (values, constraint) {
-
           if (Array.isArray(values)) {
             for (var i = 0; i < values.length; i++) {
-              return Query.lhs.rhs._satisfies(values[i], constraint)
+              if ( Query.lhs.rhs._satisfies(values[i], constraint)) return true
             }
             return false;
           }

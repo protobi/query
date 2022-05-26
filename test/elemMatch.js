@@ -65,8 +65,8 @@ describe("Underscore Query Tests", function () {
         }
       }
     })
-
     assert.equal(result.length, 2)
+
     assert.deepEqual(result, [{x: [5, 10, 25]}, {x: [10, 11, 15]}])
 
     var result = Query.query(rows, {
@@ -75,9 +75,10 @@ describe("Underscore Query Tests", function () {
         $lte: 17
       }
     })
+    console.log('result',result)
 
-    assert.equal(result.length, 2)
-    assert.deepEqual(result, [{x: [5, 10, 25]}, {x: [10, 11, 15]}])
+    assert.equal(result.length, 1)
+    assert.deepEqual(result, [ {x: [10, 11, 15]}])
 
   });
 
