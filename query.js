@@ -112,7 +112,6 @@
         return true;
       },
 
-
       /**
        * Custom extension that returns true iff the number of given constraints satisfied by this row equals a given number.
        * This can be used to test logic of the form "Exactly N of the following statements are true"
@@ -297,42 +296,50 @@
 
         // test whether a single value matches a particular constraint
         _satisfies: function (value, constraint, row, getter) {
-          if (constraint === value)  return true;
+          if (constraint === value) return true;
           if (typeof value === 'string') {
-            if (((value[0] === '[' ) || (value[0] === '{') )) {
+            if (((value[0] === '[') || (value[0] === '{'))) {
               try {
                 value = JSON.parse(value)
-              }
-              catch (e) {
+              } catch (e) {
               }
             }
           }
-          if (constraint instanceof RegExp)  return this.$regex(value, constraint);
-          else if (Array.isArray(constraint))  return this.$in(value, constraint);
+          else if (Array.isArray(value) && !(constraint && typeof constraint == 'object' && ('$deepEquals' in constraint  || '$any' in constraint || '$all' in constraint || '$size' in constraint || '$type' in constraint))) {
+
+            if (value.length == 0) {
+              return this._satisfies('', constraint, row, getter)
+            }
+            else {
+              for (var i = 0; i < value.length; i++) {
+                if (this._satisfies(value[i], constraint, row, getter)) return true;
+              }
+              return false;
+            }
+          }
+
+
+          if (constraint instanceof RegExp) return this.$regex(value, new RegExp(constraint));
+          else if (Array.isArray(constraint)) return this.$in(value, constraint);
           else if (constraint && typeof constraint === 'object') {
             if (constraint instanceof Date) return this.$eq(value, constraint.getTime())
             else if (constraint.$regex) return this.$regex(value, new RegExp(constraint.$regex, constraint.$options))
             else if (constraint instanceof RegExp) return this.$regex(value, constraint)
             else {
               for (var key in constraint) {
-                if (!this[key])  return this.$eq(value, constraint, row, getter)
-                else if (!this[key](value, constraint[key], row, getter))  return false;
+                if (!this[key]) return this.$eq(value, constraint, row, getter)
+                else if (!this[key](value, constraint[key], row, getter)) return false;
               }
               return true;
             }
           }
-          else if (constraint === '' || constraint === null || constraint === undefined)  return this.$null(value);
-          else if (Array.isArray(value)) {
-            for (var i = 0; i < value.length; i++)
-              if (this.$eq(value[i], constraint)) return true;
-            return false;
-          }
+          else if (constraint === '' || constraint === null || constraint === undefined) return this.$null(value);
 
           else return this.$eq(value, constraint, row, getter);
         },
 
-
         $eq: function (value, constraint) {
+
           if (value === constraint) return true;
           else if (Array.isArray(value)) {
             for (var i = 0; i < value.length; i++)
@@ -356,10 +363,7 @@
           else {
             return value == constraint
           }
-          ;
-
         },
-
 
         $exists: function (value, constraint) {
           return (value != undefined) == (constraint && true);
@@ -367,10 +371,14 @@
 
         $deepEquals: function (value, constraint) {
           if (typeof _ == 'undefined' || typeof _.isEqual == 'undefined') {
-            return JSON.stringify(value) == JSON.stringify(constraint); //
+            var result = JSON.stringify(value) == JSON.stringify(constraint);
+            console.log("$deepEquals.1", JSON.stringify(value), JSON.stringify(constraint), result);
+            return result
           }
           else {
-            return _.isEqual(value, constraint);
+            var result = _.isEqual(value, constraint);
+            console.log("$deepEquals.2", JSON.stringify(value), JSON.stringify(constraint), result);
+            return result
           }
         },
 
@@ -439,7 +447,6 @@
           else return false;
         },
 
-
         /**
          * returns true if any of the values are keys of the constraint
          * @param values
@@ -484,10 +491,14 @@
         },
 
         $elemMatch: function (values, constraint) {
-          for (var i = 0; i < values.length; i++) {
-            if (Query.lhs._rowsatisfies(values[i], constraint)) return true;
+
+          if (Array.isArray(values)) {
+            for (var i = 0; i < values.length; i++) {
+              return Query.lhs.rhs._satisfies(values[i], constraint)
+            }
+            return false;
           }
-          return false;
+          else return Query.lhs.rhs._satisfies(values, constraint)
         },
 
         $contains: function (values, constraint) {
@@ -554,7 +565,6 @@
           return !this.$null(values) && values <= this.resolve(ref);
         },
 
-
         $before: function (values, ref) {
           if (typeof ref === 'string') ref = Date.parse(ref);
           if (typeof values === 'string') values = Date.parse(values);
@@ -577,18 +587,21 @@
         },
 
         $size: function (values, ref) {
-          return (typeof values == 'object' && (values.length == ref || Object.keys(values).length == ref) );
+          return (typeof values == 'object' && (values.length == ref || Object.keys(values).length == ref));
         },
 
         $mod: function (values, ref) {
           return values % ref[0] == ref[1]
         },
+
         $equal: function () {
           return this.$eq(arguments);
         },
+
         $between: function (values, ref) {
           return this._satisfies(values, {$gt: ref[0], $lt: ref[1]})
         },
+
         resolve: function (ref) {
           if (typeof ref === 'object') {
             if (ref["$date"]) return Date.parse(ref["$date"])
@@ -618,7 +631,8 @@
         if (!isNaN(intKey)) {
           // Array key was a number e.g some.path.5
           sub = sub[intKey];
-        } else {
+        }
+        else {
           // Prop name was not a number
           if (Array.isArray(sub[0])) {
             // Array of arrays - flatten
@@ -632,7 +646,8 @@
             return Query.undotArray(value, key);
           });
         }
-      } else {
+      }
+      else {
         sub = sub[key];
       }
     }
@@ -658,7 +673,7 @@
   RegExp.prototype.toJSON = RegExp.prototype.toString;
 
   if (typeof module != 'undefined') module.exports = Query;
-  else if (typeof define != 'undefined' && define.amd)   define('query', [], function () {
+  else if (typeof define != 'undefined' && define.amd) define('query', [], function () {
     return Query;
   })
   else if (typeof window != 'undefined') window.Query = Query;
