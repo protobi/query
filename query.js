@@ -314,7 +314,7 @@
             else if (constraint instanceof RegExp) return this.$regex(value, constraint)
             else {
               for (var key in constraint) {
-                if (!this[key]) return this.$eq(value, constraint, row, getter)
+                if (!this[key]) return this._satisfies(value[key], constraint[key], row, getter)
                 else if (!this[key](value, constraint[key], row, getter)) return false;
               }
               return true;
