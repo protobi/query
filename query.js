@@ -92,7 +92,7 @@
         };
       }
       var filter = new Query.Query(constraints, getter);
-      return rows.filter(filter);
+      return (rows||[]).filter(filter);
     },
 
     lhs: { // queries that are not yet referenced to a particular attribute, e.g. {$not: {likes: 0}}
@@ -121,12 +121,10 @@
        * @returns {*}
        */
       $count: function (row, condition, getter) {
-
-        var res = condition.$constraints.map(function (c) {
+        let subconditions = condition.$conditions || condition.$constraints
+        var res = subconditions.map(function (c) {
           return Query.satisfies(row, c, getter);
-        }).filter(function (v) {
-          return v
-        }).length
+        }).filter(function (v) {return v}).length
         return this.rhs._satisfies(res, condition.$constraint)
       },
 
