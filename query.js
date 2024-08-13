@@ -85,6 +85,7 @@
     },
 
     query: function (rows, constraints, getter) {
+      if (!Array.isArray(rows)) return []
       if (typeof getter == 'string') {
         var method = getter;
         getter = function (obj, key) {
@@ -92,7 +93,7 @@
         };
       }
       var filter = new Query.Query(constraints, getter);
-      return (rows||[]).filter(filter);
+      return rows.filter(filter);
     },
 
     lhs: { // queries that are not yet referenced to a particular attribute, e.g. {$not: {likes: 0}}
