@@ -23,33 +23,6 @@
     else return row[key]
   }
 
-// polyfill, since String.startsWith is part of ECMAScript 6,
-  if (!String.prototype.startsWith) {
-    Object.defineProperty(String.prototype, 'startsWith', {
-      enumerable: false,
-      configurable: false,
-      writable: false,
-      value: function (searchString, position) {
-        position = position || 0;
-        return this.lastIndexOf(searchString, position) === position;
-      }
-    });
-  }
-
-// polyfill, since String.endsWith is part of ECMAScript 6,
-  if (!String.prototype.endsWith) {
-    Object.defineProperty(String.prototype, 'endsWith', {
-      value: function (searchString, position) {
-        var subjectString = this.toString();
-        if (position === undefined || position > subjectString.length) {
-          position = subjectString.length;
-        }
-        position -= searchString.length;
-        var lastIndex = subjectString.indexOf(searchString, position);
-        return lastIndex !== -1 && lastIndex === position;
-      }
-    });
-  }
 
   // should turn this function around so it works more like this
   //
@@ -213,7 +186,10 @@
 
             var operation = Object.keys(aggrexp)[0]
             var operands = aggrexp[operation]
-            var value = this.agg[operation](row, operands, getter)
+            // Use lhs.$same if operation is $same, otherwise use agg functions
+            var value = (operation === '$same')
+              ? this.$same(row, operands, getter)
+              : this.agg[operation](row, operands, getter)
             result = result && this.rhs[key](value, constraint)
 
           }
@@ -267,24 +243,7 @@
           var num = _get(row, operands[0], getter)
           var den = _get(row, operands[1], getter)
           return num / den
-        },
-
-        $same: function (row, condition, getter) {
-          if (Array.isArray(condition)) {
-            var vals = condition
-                .map(function (key) {
-                  return (getter ? getter(row, key) : row[key])
-                })
-                .filter(notNA)
-
-            if (vals.length == 0) return true;
-            for (var i = 0; i < vals.length; i++) {
-              if (vals[i] != vals[0]) return false
-            }
-            return true
-          }
-          throw new Error("$same requires array value ")
-        },
+        }
       },
 
       rhs: {  // queries that reference a particular attribute, e.g. {likes: {$gt: 10}}
@@ -663,7 +622,7 @@
     return Query;
   })
   else if (typeof window != 'undefined') window.Query = Query;
-  else if (typeof GLOBAL != undefined && GLOBAL.global) GLOBAL.global.Query = Query;
+  else if (typeof GLOBAL != 'undefined' && GLOBAL.global) GLOBAL.global.Query = Query;
 
   return Query;
 })(this);
