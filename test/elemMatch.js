@@ -151,6 +151,35 @@ describe("Underscore Query Tests", function () {
           }
         });
     assert.equal(result.length, 1);
-  })
 
+    var rows = [
+      {title: "Home", comments:[
+        {text:"I like this post"},
+        {text:"I love this post"},
+        {text:"I hate this post"}
+      ]},
+      {title: "About", comments:[
+        {text:"I like this page"},
+        {text:"I love this page"},
+        {text:"I really like this page"}
+      ]}
+    ];
+    result = _.query(rows, {
+      comments: {
+        $elemMatch: {
+          text: "I really like this page"
+        }
+      }
+    });
+    assert.equal(result.length, 1);
+
+    result = _.query(rows, {
+      comments: {
+        $elemMatch: {
+          text: /really/i
+        }
+      }
+    });
+    assert.equal(result.length, 1);
+  })
 })
