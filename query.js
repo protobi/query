@@ -528,7 +528,29 @@
         },
 
         $all: function (values, ref) {
-          throw new Error("$all not implemented")
+          if (!Array.isArray(ref)) throw new Error("$all requires an array operand")
+
+          var result = true
+
+          if (!Array.isArray(values)) {
+            values = [values]
+          }
+
+          for (var i = 0; i < ref.length; i++) {
+            var found = false
+            for (var v = 0; v < values.length; v++) {
+              if (this._satisfies(values[v], ref[i])) {
+                found = true
+                break
+              }
+            }
+            if (!found) {
+              result = false
+              break
+            }
+          }
+
+          return result
         },
 
         $size: function (values, ref) {
